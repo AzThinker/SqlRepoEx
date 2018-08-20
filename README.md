@@ -37,6 +37,7 @@ WHERE ([dbo].[ToDo].[IsCompleted] = 0)
 And ([dbo].[ToDo].[Id] = 3);
 
 ```
+指定非自增字段
 ``` C#
 var repository = this.repositoryFactory.Create<DoitTest>();
 DoitTest doitTest = new DoitTest();
@@ -46,13 +47,13 @@ doitTest.TestBool = true;
 doitTest.TestId = 123;
 Console.WriteLine(repository.Insert().UsingIdField(d => d.TestId, false).For(doitTest).Sql());
 ```
-
+生成的SQL
 ``` SQL
 INSERT [dbo].[DoitTest]([TestId], [TestRmk], [TestBool])
 VALUES(123, '测试', 1);
 
 ```
-
+指定非自增字段
 ``` C#
 var repository = this.repositoryFactory.Create<DoitTest>();
 DoitTest doitTest = new DoitTest();
@@ -62,7 +63,7 @@ doitTest.TestBool = true;
 doitTest.TestId = 123;
 Console.WriteLine(repository.Insert().UsingIdField(d => d.TestId).For(doitTest).Sql());
 ```
-
+生成的SQL
 ``` SQL
 INSERT [dbo].[DoitTest]([TestRmk], [TestBool])
 VALUES('测试', 1);
@@ -71,9 +72,7 @@ FROM [dbo].[DoitTest]
 WHERE [TestId] = SCOPE_IDENTITY();
 ```
  
- 
-
-
+原项目中的例子：
 ```csharp
 
 public class GettingStarted
