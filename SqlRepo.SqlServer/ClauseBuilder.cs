@@ -1,3 +1,4 @@
+using Atk.AtkExpression;
 using SqlRepoEx.Abstractions;
 using SqlRepoEx.SqlServer.CustomAttribute;
 using System;
@@ -80,7 +81,7 @@ namespace SqlRepoEx.SqlServer
                 var binaryExpression = lambdaExpression.Body as BinaryExpression;
                 if (binaryExpression != null)
                 {
-                    return this.GetExpressionValue(binaryExpression.Right);
+                    return this.GetExpressionValue(AtkPartialEvaluator.Eval(binaryExpression.Right));
                 }
 
                 var callExpression = lambdaExpression.Body as MethodCallExpression;

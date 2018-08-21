@@ -28,7 +28,7 @@ namespace GettingStartedIoC
 
             var gettingStarted = container.Resolve<IGettingStarted>();
             gettingStarted.DoIt();
-            gettingStarted.DoIt2();
+           // gettingStarted.DoIt2();
 
 
             //  var exp= Expression<Func<

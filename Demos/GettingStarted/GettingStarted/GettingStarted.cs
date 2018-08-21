@@ -25,13 +25,13 @@ namespace GettingStartedIoC
             Console.WriteLine();
             Console.WriteLine();
             Console.WriteLine();
-            results = results.Where(e => e.IsCompleted == false);
+            results = results.Where(e => e.IsCompleted == TestExpEval());
 
-            results = results.Where(e => e.Id == 3);
+           // results = results.Where(e => e.Id == 3);
 
 
             Console.WriteLine(results.Sql());
-
+            var its = results.Go();
         }
 
 
@@ -51,6 +51,11 @@ namespace GettingStartedIoC
             //  Console.WriteLine($"{results.TestId},{results.TestRmk},{results.TestBool} ");
 
 
+        }
+
+        public bool TestExpEval()
+        {
+            return true;
         }
     }
 }

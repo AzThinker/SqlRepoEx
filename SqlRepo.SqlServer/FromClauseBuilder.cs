@@ -1,3 +1,4 @@
+using Atk.AtkExpression;
 using SqlRepoEx.SqlServer.Abstractions;
 using SqlRepoEx.SqlServer.CustomAttribute;
 using System;
@@ -221,7 +222,7 @@ namespace SqlRepoEx.SqlServer
                            RightTableAlias = this.currentTableSpecification.RightAlias,
                            RightTableSchema = this.currentTableSpecification.RightSchema,
                            RightTableName = this.currentTableSpecification.RightTable,
-                           RightIdentifier = this.GetMemberName(binaryExpression.Right),
+                           RightIdentifier = this.GetMemberName(AtkPartialEvaluator.Eval(binaryExpression.Right)),
                            Operator = this.OperatorString(binaryExpression.NodeType)
                        }
                        : default(JoinCondition);

@@ -1,4 +1,5 @@
-﻿using SqlRepoEx.Abstractions;
+﻿using Atk.AtkExpression;
+using SqlRepoEx.Abstractions;
 using SqlRepoEx.SqlServer.Abstractions;
 using SqlRepoEx.SqlServer.CustomAttribute;
 using System;
@@ -859,7 +860,7 @@ namespace SqlRepoEx.SqlServer
                 LeftTableAlias = leftTableAlias,
                 Operator = this.OperatorString(binaryExpression.NodeType),
                 RightEntityType = typeof(TRight),
-                RightIdentifier = this.GetMemberName(binaryExpression.Right),
+                RightIdentifier = this.GetMemberName(AtkPartialEvaluator.Eval(binaryExpression.Right)),
                 RightTableAlias = rightTableAlias,
                 LogicalOperator = locLogicalOperator
             });
