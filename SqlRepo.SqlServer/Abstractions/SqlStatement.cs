@@ -1,20 +1,21 @@
-﻿using System;
+﻿using SqlRepoEx.Abstractions;
+using SqlRepoEx.SqlServer.CustomAttribute;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
-using SqlRepoEx.Abstractions;
 
 namespace SqlRepoEx.SqlServer.Abstractions
 {
     public abstract class SqlStatement<TEntity, TResult> : ClauseBuilder, ISqlStatement<TResult>
-        where TEntity: class, new()
+        where TEntity : class, new()
     {
         protected SqlStatement(IStatementExecutor statementExecutor, IEntityMapper entityMapper)
         {
             this.StatementExecutor =
                 statementExecutor ?? throw new ArgumentNullException(nameof(statementExecutor));
             this.EntityMapper = entityMapper ?? throw new ArgumentNullException(nameof(entityMapper));
-            this.TableSchema = "dbo";
-            this.TableName = typeof(TEntity).Name;
+            this.TableSchema = CustomAttributeHandle.DbTableSchema<TEntity>();
+            this.TableName = CustomAttributeHandle.DbTableName<TEntity>();
         }
 
         protected IStatementExecutor StatementExecutor { get; }
@@ -32,19 +33,19 @@ namespace SqlRepoEx.SqlServer.Abstractions
         }
 
         protected EntityIdentity GetIdByConvention<T>(T entity)
-            where T: class
+            where T : class
         {
             var entityType = typeof(TEntity);
             var name = entityType.Name;
-            var possibles = new[] {"id", "key", $"{name}id", $"{name}key", $"{name}_id", $"{name}_key"};
+            var possibles = new[] { "id", "key", $"{name}id", $"{name}key", $"{name}_id", $"{name}_key" };
             var properties = entityType.GetProperties();
             var property = properties.FirstOrDefault(p => possibles.Contains(p.Name.ToLowerInvariant()));
 
             var identiy = new EntityIdentity
-                          {
-                              Name = "Id"
-                          };
-            if(property != null)
+            {
+                Name = "Id"
+            };
+            if (property != null)
             {
                 identiy.Name = property.Name;
                 identiy.Value = property.GetValue(entity);

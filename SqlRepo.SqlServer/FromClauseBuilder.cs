@@ -1,4 +1,5 @@
 using SqlRepoEx.SqlServer.Abstractions;
+using SqlRepoEx.SqlServer.CustomAttribute;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -125,8 +126,8 @@ namespace SqlRepoEx.SqlServer
             return From<TEntity>(Utils.Alias(alias), tableName, tableSchema);
         }
 
-        public IFromClauseBuilder InnerJoin<TLeft, TRight>(TableAlias leftTableAlias ,
-            TableAlias rightTableAlias ,
+        public IFromClauseBuilder InnerJoin<TLeft, TRight>(TableAlias leftTableAlias,
+            TableAlias rightTableAlias,
             string rightTableName = null,
             string rightTableSchema = null)
         {
@@ -169,7 +170,7 @@ namespace SqlRepoEx.SqlServer
         {
             if (string.IsNullOrWhiteSpace(rightTableName))
             {
-                rightTableName = typeof(TEntity).Name;
+                rightTableName = CustomAttributeHandle.DbTableName<TEntity>();// typeof(TEntity).Name;
             }
 
             if (string.IsNullOrWhiteSpace(rightTableSchema))

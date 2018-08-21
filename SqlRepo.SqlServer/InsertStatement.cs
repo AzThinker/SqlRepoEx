@@ -1,19 +1,20 @@
 ﻿using SqlRepoEx.Abstractions;
 using SqlRepoEx.SqlServer.Abstractions;
+using SqlRepoEx.SqlServer.CustomAttribute;
 using System;
 using System.Collections.Generic;
+
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading.Tasks;
-
 namespace SqlRepoEx.SqlServer
 {
     public class InsertStatement<TEntity> : SqlStatement<TEntity, TEntity>, IInsertStatement<TEntity>
         where TEntity : class, new()
     {
         private const string StatementTemplateAutoInc = "INSERT [{0}].[{1}]({2})\nVALUES({3}){4};"
-                                                 + "\nSELECT *\nFROM [{0}].[{1}]\nWHERE [{5}] = SCOPE_IDENTITY();";
+                                                 + "\nSELECT {5}\nFROM [{0}].[{1}]\nWHERE [{6}] = SCOPE_IDENTITY();";
         private const string StatementTemplate = "INSERT [{0}].[{1}]({2})\nVALUES({3}){4};";
         private readonly IList<Expression<Func<TEntity, object>>> selectors =
             new List<Expression<Func<TEntity, object>>>();
@@ -40,6 +41,9 @@ namespace SqlRepoEx.SqlServer
                 throw new InvalidOperationException(
                     "For cannot be used once With has been used, please use FromScratch to reset the command before using With.");
             }
+
+            IdentityFiled = CustomAttributeHandle.IdentityFiledStr<TEntity>(IdentityFiled);
+
             this.IsClean = false;
             this.entity = entity;
             return this;
@@ -106,6 +110,7 @@ namespace SqlRepoEx.SqlServer
                                 this.GetColumnsList(),
                                 this.GetValuesList(),
                                 string.Empty,
+                                this.GetColumnsListBack(),
                                 IdentityFiled);
             }
             else
@@ -138,7 +143,7 @@ namespace SqlRepoEx.SqlServer
             {
                 this.IdentityFiled = "this_is_no_identityfiled";
             }
-            
+
 
             this.IsAutoIncrement = IsAutoInc;
 
@@ -183,10 +188,26 @@ namespace SqlRepoEx.SqlServer
             return this.selectors.Any() ? this.GetColumnsListFromSelectors() : this.GetColumnsListFromEntity();
         }
 
+
+        private string GetColumnsListBack()
+        {
+            return this.selectors.Any() ? this.GetColumnsListFromSelectors() : this.GetColumnsListFromEntityBack();
+        }
+
         private string GetColumnsListFromEntity()
         {
             var names = typeof(TEntity).GetProperties()
-                                       .Where(p => p.Name != IdentityFiled
+                                       .Where(p => !p.IsIdField(IdentityFiled) && !p.IsNonDBField()
+                                                   && this.writablePropertyMatcher.Test(p.PropertyType))
+                                       .Select(p => p.Name);
+            return this.FormatColumnNames(names);
+        }
+
+
+        private string GetColumnsListFromEntityBack()
+        {
+            var names = typeof(TEntity).GetProperties()
+                                       .Where(p => !p.IsNonDBField()
                                                    && this.writablePropertyMatcher.Test(p.PropertyType))
                                        .Select(p => p.Name);
             return this.FormatColumnNames(names);
@@ -201,10 +222,11 @@ namespace SqlRepoEx.SqlServer
         private string GetValuesFromEntity()
         {
             var entityValues = typeof(TEntity).GetProperties()
-                                              .Where(p => p.Name != IdentityFiled
+                                              .Where(p => !p.IsIdField(IdentityFiled) && !p.IsNonDBField()
                                                           && this.writablePropertyMatcher.Test(
                                                               p.PropertyType))
                                               .Select(p => p.GetValue(this.entity));
+
             return this.FormatValues(entityValues);
         }
 
@@ -212,5 +234,6 @@ namespace SqlRepoEx.SqlServer
         {
             return this.selectors.Any() ? this.FormatValues(this.values) : this.GetValuesFromEntity();
         }
+
     }
 }

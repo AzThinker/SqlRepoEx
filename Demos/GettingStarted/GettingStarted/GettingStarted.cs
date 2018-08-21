@@ -1,4 +1,5 @@
 ﻿using SqlRepoEx.Abstractions;
+using SqlRepoEx.SqlServer.CustomAttribute;
 using System;
 
 namespace GettingStartedIoC
@@ -14,9 +15,8 @@ namespace GettingStartedIoC
 
         public void DoIt()
         {
-            var repository = this.repositoryFactory.Create<ToDo>();
-            var results = repository.Query()
-                                    .Select(e => e.Id, e => e.Task, e => e.CreatedDate);
+            var repository = this.repositoryFactory.Create<ToDo_New>();
+            var results = repository.Query();
             //  .Where(e => e.IsCompleted == false)
             //  .Go();
 
@@ -37,13 +37,15 @@ namespace GettingStartedIoC
 
         public void DoIt2()
         {
-            var repository = this.repositoryFactory.Create<DoitTest>();
-            DoitTest doitTest = new DoitTest();
+            Console.WriteLine(CustomAttributeHandle.IdentityFiledStr<DoitTest_New>("OK"));
+            var repository = this.repositoryFactory.Create<DoitTest_New>();
+            DoitTest_New doitTest = new DoitTest_New();
 
             doitTest.TestRmk = "测试";
             doitTest.TestBool = true;
             doitTest.TestId = 123;
-            Console.WriteLine(repository.Insert().UsingIdField(d => d.TestId, false).For(doitTest).Sql());
+            Console.WriteLine(repository.Insert().For(doitTest).Sql());
+            // Console.WriteLine(repository.Insert().UsingIdField(d => d.TestId).For(doitTest).Sql());
             //  var results = repository.Insert().UsingIdField(d=>d.TestId).For(doitTest).Go();
 
             //  Console.WriteLine($"{results.TestId},{results.TestRmk},{results.TestBool} ");

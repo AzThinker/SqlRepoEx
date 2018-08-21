@@ -1,9 +1,9 @@
+using SqlRepoEx.SqlServer.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq.Expressions;
 using System.Reflection;
-using SqlRepoEx.SqlServer.Abstractions;
 
 namespace SqlRepoEx.SqlServer
 {
@@ -12,7 +12,7 @@ namespace SqlRepoEx.SqlServer
         private static readonly Dictionary<string, object> EntityMapperDefinitions = new Dictionary<string, object>();
 
         public virtual IEnumerable<TEntity> Map<TEntity>(IDataReader reader)
-            where TEntity: class, new()
+            where TEntity : class, new()
         {
             var list = new List<TEntity>();
 
@@ -41,7 +41,7 @@ namespace SqlRepoEx.SqlServer
             var isFirst = true;
             var mappingInstructions = new Func<IDataReader, TEntity, TEntity>[reader.FieldCount];
 
-            while(reader.Read())
+            while (reader.Read())
             {
                 var entity = entityMapper.Activator();
 
@@ -54,7 +54,9 @@ namespace SqlRepoEx.SqlServer
                         var columnName = reader.GetName(i);
 
                         if (!entityMapper.PropertySetters.ContainsKey(columnName))
+                        {
                             continue;
+                        }
 
                         var propertySetter = entityMapper.PropertySetters[columnName];
 
@@ -77,7 +79,9 @@ namespace SqlRepoEx.SqlServer
                                 mappingInstructions[i] = (dataReader, e) =>
                                 {
                                     if (reader.IsDBNull(fieldIndex))
+                                    {
                                         return e;
+                                    }
 
                                     propertySetter(e, reader.GetDecimal(fieldIndex));
                                     return e;
@@ -88,7 +92,9 @@ namespace SqlRepoEx.SqlServer
                                 mappingInstructions[i] = (dataReader, e) =>
                                 {
                                     if (reader.IsDBNull(fieldIndex))
+                                    {
                                         return e;
+                                    }
 
                                     propertySetter(e, reader.GetString(fieldIndex));
                                     return e;
@@ -107,7 +113,9 @@ namespace SqlRepoEx.SqlServer
                                 mappingInstructions[i] = (dataReader, e) =>
                                 {
                                     if (reader.IsDBNull(fieldIndex))
+                                    {
                                         return e;
+                                    }
 
                                     propertySetter(e, reader.GetInt16(fieldIndex));
                                     return e;
@@ -126,7 +134,9 @@ namespace SqlRepoEx.SqlServer
                                 mappingInstructions[i] = (dataReader, e) =>
                                 {
                                     if (reader.IsDBNull(fieldIndex))
+                                    {
                                         return e;
+                                    }
 
                                     propertySetter(e, reader.GetInt32(fieldIndex));
                                     return e;
@@ -145,7 +155,9 @@ namespace SqlRepoEx.SqlServer
                                 mappingInstructions[i] = (dataReader, e) =>
                                 {
                                     if (reader.IsDBNull(fieldIndex))
+                                    {
                                         return e;
+                                    }
 
                                     propertySetter(e, reader.GetInt64(fieldIndex));
                                     return e;
@@ -164,7 +176,9 @@ namespace SqlRepoEx.SqlServer
                                 mappingInstructions[i] = (dataReader, e) =>
                                 {
                                     if (reader.IsDBNull(fieldIndex))
+                                    {
                                         return e;
+                                    }
 
                                     propertySetter(e, reader.GetDateTime(fieldIndex));
                                     return e;
@@ -183,7 +197,9 @@ namespace SqlRepoEx.SqlServer
                                 mappingInstructions[i] = (dataReader, e) =>
                                 {
                                     if (reader.IsDBNull(fieldIndex))
+                                    {
                                         return e;
+                                    }
 
                                     propertySetter(e, reader.GetDouble(fieldIndex));
                                     return e;
@@ -202,7 +218,9 @@ namespace SqlRepoEx.SqlServer
                                 mappingInstructions[i] = (dataReader, e) =>
                                 {
                                     if (reader.IsDBNull(fieldIndex))
+                                    {
                                         return e;
+                                    }
 
                                     propertySetter(e, reader.GetBoolean(fieldIndex));
                                     return e;
@@ -221,7 +239,9 @@ namespace SqlRepoEx.SqlServer
                                 mappingInstructions[i] = (dataReader, e) =>
                                 {
                                     if (reader.IsDBNull(fieldIndex))
+                                    {
                                         return e;
+                                    }
 
                                     propertySetter(e, reader.GetByte(fieldIndex));
                                     return e;
@@ -240,7 +260,9 @@ namespace SqlRepoEx.SqlServer
                                 mappingInstructions[i] = (dataReader, e) =>
                                 {
                                     if (reader.IsDBNull(fieldIndex))
+                                    {
                                         return e;
+                                    }
 
                                     propertySetter(e, reader.GetFloat(fieldIndex));
                                     return e;
@@ -251,7 +273,9 @@ namespace SqlRepoEx.SqlServer
                                 mappingInstructions[i] = (dataReader, e) =>
                                 {
                                     if (reader.IsDBNull(fieldIndex))
+                                    {
                                         return e;
+                                    }
 
                                     propertySetter(e, reader.GetValue(fieldIndex));
                                     return e;
@@ -263,7 +287,9 @@ namespace SqlRepoEx.SqlServer
                             mappingInstructions[i] = (dataReader, e) =>
                             {
                                 if (reader.IsDBNull(fieldIndex))
+                                {
                                     return e;
+                                }
 
                                 propertySetter(e, reader.GetValue(fieldIndex));
                                 return e;

@@ -1,5 +1,6 @@
 ﻿using SqlRepoEx.Abstractions;
 using SqlRepoEx.SqlServer.Abstractions;
+using SqlRepoEx.SqlServer.CustomAttribute;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -220,15 +221,11 @@ namespace SqlRepoEx.SqlServer
             this.ThrowIfGroupingNotInitialised();
             this.Specification.Havings.Add(new SelectStatementHavingSpecification
             {
-                Aggregation = Aggregation
-                                                   .Count,
+                Aggregation = Aggregation.Count,
                 EntityType = typeof(T),
                 Identifier = "*",
-                Operator = this
-                                                   .OperatorStringFromComparison(
-                                                       comparison),
-                Value = this.FormatValue(
-                                                   @value)
+                Operator = this.OperatorStringFromComparison(comparison),
+                Value = this.FormatValue(@value)
             });
             return this;
         }
@@ -591,7 +588,7 @@ namespace SqlRepoEx.SqlServer
 
         public ISelectStatement<TEntity> SelectAll<T>(string @alias = null)
         {
-            this.AddColumnSelection<T>("*", @alias);
+            this.AddColumnSelectionAll<T>(@alias);
             return this;
         }
 
@@ -724,8 +721,7 @@ namespace SqlRepoEx.SqlServer
                 Alias = @alias,
                 EntityType = typeof(T),
                 Operator = ">=",
-                Left = this
-                                                           .GetMemberName(selector),
+                Left = this.GetMemberName(selector),
                 LocigalOperator = logicalOperator,
                 Right = this.FormatValue(start)
             });
@@ -734,12 +730,22 @@ namespace SqlRepoEx.SqlServer
                 Alias = @alias,
                 EntityType = typeof(T),
                 Operator = "<=",
-                Left = this
-                                                           .GetMemberName(selector),
-                LocigalOperator = LogicalOperator
-                                                           .And,
+                Left = this.GetMemberName(selector),
+                LocigalOperator = LogicalOperator.And,
                 Right = this.FormatValue(end)
             });
+        }
+
+        private void AddColumnSelectionAll<T>(string @alias = null)
+        {
+            var names = typeof(TEntity).GetProperties()
+                                       .Where(p => !p.IsNonDBField())
+                                       .Select(p => p.Name);
+            foreach (var name in names)
+            {
+                this.AddColumnSelection<T>(name, @alias);
+            }
+
         }
 
         private void AddColumnSelection<T>(Expression<Func<T, object>> selector,
@@ -775,13 +781,10 @@ namespace SqlRepoEx.SqlServer
             {
                 Alias = @alias,
                 EntityType = typeof(T),
-                Left = this.GetMemberName(
-                                                           binaryExpression.Left),
+                Left = this.GetMemberName(binaryExpression.Left),
                 LocigalOperator = logicalOperator,
-                Operator = this.OperatorString(
-                                                           binaryExpression.NodeType),
-                Right = this.FormatValue(this
-                                                           .GetExpressionValue(selector))
+                Operator = this.OperatorString(binaryExpression.NodeType),
+                Right = this.FormatValue(this.GetExpressionValue(selector))
             });
         }
 
@@ -794,8 +797,7 @@ namespace SqlRepoEx.SqlServer
             {
                 Alias = @alias,
                 EntityType = entityType,
-                Identifer =
-                                                     this.GetMemberName(selector)
+                Identifer = this.GetMemberName(selector)
             });
 
             foreach (var additionalSelector in additionalSelectors)
@@ -804,9 +806,7 @@ namespace SqlRepoEx.SqlServer
                 {
                     Alias = @alias,
                     EntityType = entityType,
-                    Identifer =
-                                                         this.GetMemberName(
-                                                             additionalSelector)
+                    Identifer = this.GetMemberName(additionalSelector)
                 });
             }
         }
@@ -821,18 +821,9 @@ namespace SqlRepoEx.SqlServer
                 Aggregation = aggregation,
                 Alias = @alias,
                 EntityType = typeof(T),
-                Identifier =
-                                                   this.GetMemberName(
-                                                       binaryExpression
-                                                           .Left),
-                Operator = this
-                                                   .OperatorString(
-                                                       binaryExpression
-                                                           .NodeType),
-                Value = this.FormatValue(
-                                                   this
-                                                       .GetExpressionValue(
-                                                           selector))
+                Identifier = this.GetMemberName(binaryExpression.Left),
+                Operator = this.OperatorString(binaryExpression.NodeType),
+                Value = this.FormatValue(this.GetExpressionValue(selector))
             });
         }
 
@@ -847,18 +838,10 @@ namespace SqlRepoEx.SqlServer
                 {
                     Alias = alias,
                     EntityType = typeof(T),
-                    LocigalOperator =
-                                                               locigalOperator,
-                    Left = this.GetMemberName(this
-                                                               .ConvertExpression(
-                                                                   selector)),
+                    LocigalOperator = locigalOperator,
+                    Left = this.GetMemberName(this.ConvertExpression(selector)),
                     Operator = "IN",
-                    Right = "(" + string.Join(", ",
-                                                                       values.Select(
-                                                                           v => this
-                                                                               .FormatValue(
-                                                                                   v)))
-                                                                   + ")"
+                    Right = "(" + string.Join(", ", values.Select(v => this.FormatValue(v))) + ")"
                 });
             }
         }
@@ -872,16 +855,11 @@ namespace SqlRepoEx.SqlServer
             this.Specification.Joins.Add(new JoinSpecification
             {
                 LeftEntityType = typeof(TLeft),
-                LeftIdentifier =
-                                                 this.GetMemberName(binaryExpression
-                                                     .Left),
+                LeftIdentifier = this.GetMemberName(binaryExpression.Left),
                 LeftTableAlias = leftTableAlias,
-                Operator = this.OperatorString(
-                                                 binaryExpression.NodeType),
+                Operator = this.OperatorString(binaryExpression.NodeType),
                 RightEntityType = typeof(TRight),
-                RightIdentifier =
-                                                 this.GetMemberName(binaryExpression
-                                                     .Right),
+                RightIdentifier = this.GetMemberName(binaryExpression.Right),
                 RightTableAlias = rightTableAlias,
                 LogicalOperator = locLogicalOperator
             });
@@ -909,8 +887,7 @@ namespace SqlRepoEx.SqlServer
                 Alias = @alias,
                 Direction = orderByDirection,
                 EntityType = entityType,
-                Identifer =
-                                                     this.GetMemberName(selector)
+                Identifer = this.GetMemberName(selector)
             });
 
             foreach (var additionalSelector in additionalSelectors)
@@ -920,9 +897,7 @@ namespace SqlRepoEx.SqlServer
                     Alias = @alias,
                     Direction = orderByDirection,
                     EntityType = entityType,
-                    Identifer =
-                                                         this.GetMemberName(
-                                                             additionalSelector)
+                    Identifer = this.GetMemberName(additionalSelector)
                 });
             }
         }
@@ -938,21 +913,18 @@ namespace SqlRepoEx.SqlServer
                 Alias = alias,
                 EntityType = typeof(T),
                 JoinType = joinType,
-                TableName =
-                                                  string.IsNullOrEmpty(
-                                                      tableName)
-                                                      ? typeof(T).Name
-                                                      : tableName,
-                Schema =
-                                                  string.IsNullOrEmpty(
-                                                      tableSchema)
-                                                      ? DefaultSchema
-                                                      : tableSchema
+                TableName = string.IsNullOrEmpty(tableName) ? CustomAttributeHandle.DbTableName<TEntity>() : tableName,
+                Schema = string.IsNullOrEmpty(tableSchema) ? CustomAttributeHandle.DbTableSchema<TEntity>() : tableSchema
             });
         }
 
         private void FinalizeColumnSpecifications()
         {
+            if (this.Specification.Columns.Count == 0)
+            {
+                var rootTable = this.Specification.Tables.First();
+                this.AddColumnSelectionAll<TEntity>(rootTable.Alias);
+            }
             foreach (var specification in this.Specification.Columns)
             {
                 var tableSpecification =
@@ -1046,7 +1018,7 @@ namespace SqlRepoEx.SqlServer
             {
                 EntityType = entityType,
                 Schema = DefaultSchema,
-                TableName = entityType.Name
+                TableName = CustomAttributeHandle.DbTableName<TEntity>()
             });
         }
 

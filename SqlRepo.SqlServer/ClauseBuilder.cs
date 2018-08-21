@@ -1,8 +1,9 @@
+using SqlRepoEx.Abstractions;
+using SqlRepoEx.SqlServer.CustomAttribute;
 using System;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using SqlRepoEx.Abstractions;
 
 namespace SqlRepoEx.SqlServer
 {
@@ -27,76 +28,78 @@ namespace SqlRepoEx.SqlServer
 
         protected string FormatValue(object @value)
         {
-            if(@value is string || @value is Guid)
+            if (@value is string || @value is Guid)
             {
                 var newString = this.ReplaceSingleQuoteWithDoubleQuote($"{@value}");
                 return $"'{newString}'";
             }
 
-            if(@value is DateTime)
+            if (@value is DateTime)
             {
                 var dateTime = (DateTime)@value;
                 return $"'{dateTime.ToString(FormatString.DateTime)}'";
             }
 
-            if(@value is DateTimeOffset)
+            if (@value is DateTimeOffset)
             {
                 var dateTime = (DateTimeOffset)@value;
                 return $"'{dateTime.ToString(FormatString.DateTimeOffset)}'";
             }
 
-            if(@value is Enum)
+            if (@value is Enum)
             {
                 return Convert.ToInt32(@value)
                               .ToString();
             }
 
-            if(!(@value is bool))
+            if (!(@value is bool))
             {
                 return @value?.ToString() ?? "NULL";
             }
             var boolValue = (bool)@value;
-            return boolValue? "1": "0";
+            return boolValue ? "1" : "0";
         }
 
         protected object GetExpressionValue(Expression expression)
         {
             var constantExpression = expression as ConstantExpression;
-            if(constantExpression != null)
+            if (constantExpression != null)
             {
                 return constantExpression.Value;
             }
 
             var unaryExpression = expression as UnaryExpression;
-            if(unaryExpression != null)
+            if (unaryExpression != null)
             {
                 return this.GetExpressionValue(unaryExpression.Operand);
             }
 
             var lambdaExpression = expression as LambdaExpression;
-            if(lambdaExpression != null)
+            if (lambdaExpression != null)
             {
                 var binaryExpression = lambdaExpression.Body as BinaryExpression;
-                if(binaryExpression != null)
+                if (binaryExpression != null)
                 {
                     return this.GetExpressionValue(binaryExpression.Right);
                 }
 
                 var callExpression = lambdaExpression.Body as MethodCallExpression;
-                if(callExpression != null)
+                if (callExpression != null)
                 {
                     return this.GetExpressionValue(callExpression);
                 }
             }
 
             var memberExpression = expression as MemberExpression;
-            if(memberExpression != null)
+            if (memberExpression != null)
             {
                 var fieldsOfObj = memberExpression.Expression as ConstantExpression;
                 var propertyInfo = memberExpression.Member as PropertyInfo;
 
                 if (propertyInfo != null && !propertyInfo.PropertyType.IsSimpleType())
+                {
                     return propertyInfo.GetValue(fieldsOfObj, null);
+                }
 
                 var @value = this.GetExpressionValue(memberExpression.Expression);
                 return this.ResolveValue((dynamic)memberExpression.Member, @value);
@@ -109,7 +112,7 @@ namespace SqlRepoEx.SqlServer
         {
             const string template = "{0}{1}{2}";
             var value = (string)this.GetExpressionValue(callExpression.Arguments.First());
-            switch(callExpression.Method.Name)
+            switch (callExpression.Method.Name)
             {
                 case MethodName.EndsWith:
                     return string.Format(template, "%", value, string.Empty);
@@ -123,25 +126,25 @@ namespace SqlRepoEx.SqlServer
         protected MemberExpression GetMemberExpression(Expression expression)
         {
             var memberExpression = expression as MemberExpression;
-            if(memberExpression != null)
+            if (memberExpression != null)
             {
                 return memberExpression;
             }
 
             var binaryExpression = expression as BinaryExpression;
-            if(binaryExpression != null)
+            if (binaryExpression != null)
             {
                 return this.GetMemberExpression(binaryExpression.Left);
             }
 
             var unaryExpression = expression as UnaryExpression;
-            if(unaryExpression != null)
+            if (unaryExpression != null)
             {
                 return this.GetMemberExpression(unaryExpression.Operand);
             }
 
             var callExpression = expression as MethodCallExpression;
-            if(callExpression != null)
+            if (callExpression != null)
             {
                 return this.GetMemberExpression(callExpression.Object);
             }
@@ -164,16 +167,16 @@ namespace SqlRepoEx.SqlServer
         {
             var lambdaExpression = expression as LambdaExpression;
 
-            if(lambdaExpression != null)
+            if (lambdaExpression != null)
             {
                 var binaryExpression = lambdaExpression.Body as BinaryExpression;
-                if(binaryExpression != null)
+                if (binaryExpression != null)
                 {
                     return this.OperatorString(binaryExpression.NodeType);
                 }
 
                 var callExpression = lambdaExpression.Body as MethodCallExpression;
-                if(callExpression != null)
+                if (callExpression != null)
                 {
                     return this.OperatorString(callExpression.Method.Name);
                 }
@@ -184,7 +187,7 @@ namespace SqlRepoEx.SqlServer
 
         protected string OperatorString(ExpressionType @operator)
         {
-            switch(@operator)
+            switch (@operator)
             {
                 case ExpressionType.GreaterThan:
                     return ">";
@@ -204,12 +207,13 @@ namespace SqlRepoEx.SqlServer
 
         protected string TableNameFromType<TEntity>()
         {
-            return typeof(TEntity).Name;
+            return CustomAttributeHandle.DbTableName<TEntity>();
+            // return typeof(TEntity).Name;
         }
 
         private string OperatorString(string methodName)
         {
-            switch(methodName)
+            switch (methodName)
             {
                 default:
                     return "LIKE";
@@ -220,16 +224,16 @@ namespace SqlRepoEx.SqlServer
         {
             var newString = originalString;
 
-            for(var i = 0; i < newString.Length; i++)
+            for (var i = 0; i < newString.Length; i++)
             {
-                if(newString[i] != '\'')
+                if (newString[i] != '\'')
                 {
                     continue;
                 }
 
-                if(i == 0 || (newString[i - 1] != '\''))
+                if (i == 0 || (newString[i - 1] != '\''))
                 {
-                    if(i == newString.Length - 1 || newString[i + 1] != '\'')
+                    if (i == newString.Length - 1 || newString[i + 1] != '\'')
                     {
                         newString = newString.Insert(i, "'");
                     }

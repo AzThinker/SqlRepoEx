@@ -1,9 +1,9 @@
-﻿using System;
-using System.Linq.Expressions;
-using Autofac;
+﻿using Autofac;
 using SqlRepoEx.Abstractions;
 using SqlRepoEx.SqlServer.Autofac;
 using SqlRepoEx.SqlServer.ConnectionProviders;
+using System;
+using System.Linq.Expressions;
 
 namespace GettingStartedIoC
 {
@@ -27,11 +27,11 @@ namespace GettingStartedIoC
             var container = containerBuilder.Build();
 
             var gettingStarted = container.Resolve<IGettingStarted>();
-            // gettingStarted.DoIt();
+            gettingStarted.DoIt();
             gettingStarted.DoIt2();
 
 
-          //  var exp= Expression<Func<
+            //  var exp= Expression<Func<
 
             Console.ReadLine();
         }
