@@ -1,16 +1,16 @@
-﻿using System;
+﻿using SqlRepoEx.Abstractions;
+using SqlRepoEx.SqlServer.Abstractions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading.Tasks;
-using SqlRepoEx.Abstractions;
-using SqlRepoEx.SqlServer.Abstractions;
 
 namespace SqlRepoEx.SqlServer
 {
     public class UpdateStatement<TEntity> : SqlStatement<TEntity, int>, IUpdateStatement<TEntity>
-        where TEntity: class, new()
+        where TEntity : class, new()
     {
         private const string StatementTemplate = "UPDATE [{0}].[{1}]\nSET {2}{3};";
 
@@ -40,7 +40,7 @@ namespace SqlRepoEx.SqlServer
 
         public IUpdateStatement<TEntity> For(TEntity entity)
         {
-            if(this.setSelectors.Any() || !this.whereClauseBuilder.IsClean)
+            if (this.setSelectors.Any() || !this.whereClauseBuilder.IsClean)
             {
                 throw new InvalidOperationException(
                     "For cannot be used once Set or Where have been used, please create a new command.");
@@ -84,7 +84,7 @@ namespace SqlRepoEx.SqlServer
             string tableSchema = null,
             string tableName = null)
         {
-            if(this.entity != null)
+            if (this.entity != null)
             {
                 throw new InvalidOperationException(
                     "Set cannot be used once For has been used, please create a new command.");
@@ -100,7 +100,7 @@ namespace SqlRepoEx.SqlServer
 
         public override string Sql()
         {
-            if(this.entity == null && !this.setSelectors.Any())
+            if (this.entity == null && !this.setSelectors.Any())
             {
                 throw new InvalidOperationException(
                     "Build cannot be used on a statement that has not been initialised using Set or For.");
@@ -113,9 +113,15 @@ namespace SqlRepoEx.SqlServer
                 this.GetWhereClause());
         }
 
+        public IUpdateStatement<TEntity> UsingTableName(string tableName)
+        {
+            this.TableName = tableName;
+            return this;
+        }
+
         public IUpdateStatement<TEntity> Where(Expression<Func<TEntity, bool>> expression)
         {
-            if(this.entity != null)
+            if (this.entity != null)
             {
                 throw new InvalidOperationException(
                     "Where cannot be used once For has been used, please create a new command.");
@@ -125,7 +131,7 @@ namespace SqlRepoEx.SqlServer
             this.whereClauseBuilder.Where(expression);
             return this;
         }
-        
+
         public IUpdateStatement<TEntity> WhereIn<TMember>(Expression<Func<TEntity, TMember>> selector, TMember[] values)
         {
             if (this.entity != null)
@@ -145,7 +151,7 @@ namespace SqlRepoEx.SqlServer
 
         private string GetSetClause()
         {
-            return this.setSelectors.Any()? this.GetSetClauseFromSelectors(): this.GetSetClauseFromEntity();
+            return this.setSelectors.Any() ? this.GetSetClauseFromSelectors() : this.GetSetClauseFromEntity();
         }
 
         private string GetSetClauseFromEntity()
@@ -171,24 +177,24 @@ namespace SqlRepoEx.SqlServer
 
         private string GetTableName()
         {
-            return string.IsNullOrEmpty(this.TableName)? this.TableNameFromType<TEntity>(): this.TableName;
+            return string.IsNullOrEmpty(this.TableName) ? this.TableNameFromType<TEntity>() : this.TableName;
         }
 
         private string GetTableSchema()
         {
-            return string.IsNullOrEmpty(this.TableSchema)? "dbo": this.TableSchema;
+            return string.IsNullOrEmpty(this.TableSchema) ? "dbo" : this.TableSchema;
         }
 
         private string GetWhereClause()
         {
-            if(this.entity != null)
+            if (this.entity != null)
             {
                 var identity = this.GetIdByConvention(this.entity);
                 return $"\nWHERE [{identity.Name}] = {identity.Value}";
             }
 
             var result = this.whereClauseBuilder.Sql();
-            return string.IsNullOrWhiteSpace(result)? string.Empty: $"\n{result}";
+            return string.IsNullOrWhiteSpace(result) ? string.Empty : $"\n{result}";
         }
     }
 }

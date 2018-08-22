@@ -52,6 +52,8 @@ namespace SqlRepoEx.Abstractions
 
         ISelectStatement<TEntity> From(string alias = null, string tableName = null, string tableSchema = null);
 
+        ISelectStatement<TEntity> UsingTableName(string tableName);
+
         ISelectStatement<TEntity> GroupBy<T>(Expression<Func<T, object>> selector,
             string alias = null,
             params Expression<Func<T, object>>[] additionalSelectors);

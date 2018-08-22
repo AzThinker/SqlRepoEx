@@ -1121,5 +1121,13 @@ namespace SqlRepoEx.SqlServer
                     "A table specification for the entity type and alias must be set using From or one of the Join methods before filtering, sorting or grouping can be applied.");
             }
         }
+
+        public ISelectStatement<TEntity> UsingTableName(string tableName)
+        {
+            var rootTable = this.Specification.Tables.First();
+            rootTable.TableName = tableName;
+            
+            return this;
+        }
     }
 }

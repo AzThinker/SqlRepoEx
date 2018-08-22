@@ -6,6 +6,7 @@ namespace SqlRepoEx.Abstractions
     public interface IUpdateStatement<TEntity> : ISqlStatement<int>
         where TEntity: class, new()
     {
+        IUpdateStatement<TEntity> UsingTableName(string tableName);
         IUpdateStatement<TEntity> And(Expression<Func<TEntity, bool>> expression);
         IUpdateStatement<TEntity> For(TEntity entity);
         IUpdateStatement<TEntity> NestedAnd(Expression<Func<TEntity, bool>> expression);
