@@ -1,6 +1,7 @@
 ﻿using SqlRepoEx.Abstractions;
 using SqlRepoEx.SqlServer.CustomAttribute;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -23,8 +24,14 @@ namespace SqlRepoEx.SqlServer.Abstractions
 
         public string TableName { get; protected set; }
         public string TableSchema { get; protected set; }
+
+        string ISqlStatement<TResult>.TableName => throw new NotImplementedException();
+
+        string ISqlStatement<TResult>.TableSchema => throw new NotImplementedException();
+
         public abstract TResult Go();
         public abstract Task<TResult> GoAsync();
+
 
         public ISqlStatement<TResult> UseConnectionProvider(IConnectionProvider connectionProvider)
         {
@@ -53,5 +60,6 @@ namespace SqlRepoEx.SqlServer.Abstractions
 
             return identiy;
         }
+
     }
 }

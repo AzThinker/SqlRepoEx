@@ -1,6 +1,9 @@
 ﻿using SqlRepoEx.Abstractions;
 using SqlRepoEx.SqlServer.CustomAttribute;
 using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace GettingStartedIoC
 {
@@ -32,6 +35,10 @@ namespace GettingStartedIoC
 
             Console.WriteLine(results.Sql());
             var its = results.Go();
+             
+           
+                Console.WriteLine($"{its.AsQueryable().First().Task},{its.AsQueryable().First().IsCompleted},{its.AsQueryable().First().CreatedDate} ");
+            
         }
 
 

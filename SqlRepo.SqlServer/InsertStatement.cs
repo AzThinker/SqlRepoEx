@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 namespace SqlRepoEx.SqlServer
 {
     public class InsertStatement<TEntity> : SqlStatement<TEntity, TEntity>, IInsertStatement<TEntity>
-        where TEntity : class, new()
+       where TEntity : class, new()
     {
         private const string StatementTemplateAutoInc = "INSERT [{0}].[{1}]({2})\nVALUES({3}){4};"
                                                  + "\nSELECT {5}\nFROM [{0}].[{1}]\nWHERE [{6}] = SCOPE_IDENTITY();";

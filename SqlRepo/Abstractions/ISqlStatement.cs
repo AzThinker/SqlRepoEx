@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SqlRepoEx.Abstractions
@@ -9,6 +10,7 @@ namespace SqlRepoEx.Abstractions
         string TableSchema { get; }
         TResult Go();
         Task<TResult> GoAsync();
+
         ISqlStatement<TResult> UseConnectionProvider(IConnectionProvider connectionProvider);
     }
 }

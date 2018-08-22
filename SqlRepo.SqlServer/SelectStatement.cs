@@ -170,6 +170,47 @@ namespace SqlRepoEx.SqlServer
             }
         }
 
+        public List<TEntity> ListGo()
+        {
+            using (var reader = this.StatementExecutor.ExecuteReader(this.Sql()))
+            {
+                return this.EntityMapper.MapList<TEntity>(reader);
+            }
+        }
+
+        public async Task<List<TEntity>> ListGoAsync()
+        {
+            using (var reader = await this.StatementExecutor.ExecuteReaderAsync(this.Sql()))
+            {
+                return this.EntityMapper.MapList<TEntity>(reader);
+            }
+        }
+
+
+        public TLEntity ListEntityGo<TLEntity>() where TLEntity : List<TEntity>, new()
+        {
+            using (var reader = this.StatementExecutor.ExecuteReader(this.Sql()))
+            {
+                return this.EntityMapper.MapEntityList<TLEntity, TEntity>(reader);
+            }
+        }
+
+        public async Task<TLEntity> ListEntityGoAsync<TLEntity>() where TLEntity : List<TEntity>, new()
+        {
+            using (var reader = await this.StatementExecutor.ExecuteReaderAsync(this.Sql()))
+            {
+                return this.EntityMapper.MapEntityList<TLEntity, TEntity>(reader);
+            }
+        }
+        public async Task<List<TEntity>> ListEntityGoAsync()
+        {
+            using (var reader = await this.StatementExecutor.ExecuteReaderAsync(this.Sql()))
+            {
+                return this.EntityMapper.MapList<TEntity>(reader);
+            }
+        }
+
+
         public ISelectStatement<TEntity> GroupBy<T>(Expression<Func<T, object>> selector,
             string @alias = null,
             params Expression<Func<T, object>>[] additionalSelectors)
