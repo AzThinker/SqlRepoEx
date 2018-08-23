@@ -19,7 +19,7 @@ namespace SqlRepoEx.SqlServer.CustomAttribute
         public static bool IsIdField(this PropertyInfo propertyInfo, string idname)
         {
 
-            return propertyInfo.GetCustomAttribute(typeof(IdentityFiledAttribute)) != null;
+            return (propertyInfo.GetCustomAttribute(typeof(IdentityFiledAttribute)) != null) || (propertyInfo.Name == idname);
 
 
         }
@@ -27,7 +27,7 @@ namespace SqlRepoEx.SqlServer.CustomAttribute
         public static string IdentityFiledStr<TEntity>(string oldId)
         {
             var property = typeof(TEntity).GetProperties()
-                                             .Where(p => p.IsIdField()).First();
+                                             .Where(p => p.IsIdField()).FirstOrDefault();
             if (property != null)
             {
                 return property.Name;
@@ -62,7 +62,7 @@ namespace SqlRepoEx.SqlServer.CustomAttribute
             {
                 return (attribute as TableNameAttribute).TableName;
             }
-            return typeof(TEntity).Name; 
+            return typeof(TEntity).Name;
         }
 
         public static string DbTableSchema<TEntity>()
