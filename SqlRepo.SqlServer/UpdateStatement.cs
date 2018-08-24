@@ -21,6 +21,17 @@ namespace SqlRepoEx.SqlServer
         private readonly IWhereClauseBuilder whereClauseBuilder;
         private readonly IWritablePropertyMatcher writablePropertyMatcher;
         private TEntity entity;
+        private bool tableNameChange = false;
+
+        private string GetTableNameChange(string atkTableName = null)
+        {
+            if (tableNameChange)
+            {
+                return this.TableName;
+            }
+
+            return atkTableName;
+        }
 
         public UpdateStatement(IStatementExecutor statementExecutor,
             IEntityMapper entityMapper,
@@ -94,7 +105,7 @@ namespace SqlRepoEx.SqlServer
             this.setSelectors.Add(this.ConvertExpression(selector));
             this.setValues.Add(@value);
             this.TableSchema = tableSchema;
-            this.TableName = tableName;
+            this.TableName = GetTableNameChange(tableName);
             return this;
         }
 
@@ -116,6 +127,7 @@ namespace SqlRepoEx.SqlServer
         public IUpdateStatement<TEntity> UsingTableName(string tableName)
         {
             this.TableName = tableName;
+            this.tableNameChange = true;
             return this;
         }
 
@@ -128,7 +140,7 @@ namespace SqlRepoEx.SqlServer
             }
 
             this.IsClean = false;
-            this.whereClauseBuilder.Where(expression);
+            this.whereClauseBuilder.Where(expression, tableName: GetTableName());
             return this;
         }
 
@@ -140,7 +152,7 @@ namespace SqlRepoEx.SqlServer
                     "Where cannot be used once For has been used, please create a new command.");
             }
             this.IsClean = false;
-            this.whereClauseBuilder.WhereIn<TEntity, TMember>(selector, values);
+            this.whereClauseBuilder.WhereIn<TEntity, TMember>(selector, values, tableName: GetTableName());
             return this;
         }
 

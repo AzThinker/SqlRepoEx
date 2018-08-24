@@ -22,6 +22,10 @@ namespace SqlRepoEx.SqlServer.Static
 
         public static void UseConnectionProvider(IConnectionProvider connectionProvider)
         {
+            if (connectionProvider == null)
+            {
+                return;
+            }
             RepoFactory.connectionProvider = connectionProvider;
         }
 
