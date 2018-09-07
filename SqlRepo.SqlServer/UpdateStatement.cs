@@ -1,5 +1,6 @@
 ﻿using SqlRepoEx.Abstractions;
 using SqlRepoEx.SqlServer.Abstractions;
+using SqlRepoEx.SqlServer.CustomAttribute;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -169,7 +170,7 @@ namespace SqlRepoEx.SqlServer
         private string GetSetClauseFromEntity()
         {
             var columnValuePairs = typeof(TEntity).GetProperties()
-                                                  .Where(p => p.Name != "Id" && p.CanWrite
+                                                  .Where(p => p.Name != "Id" && p.CanWrite && !p.IsNonDBField()
                                                               && this.writablePropertyMatcher.Test(p
                                                                   .PropertyType))
                                                   .Select(p => "[" + p.Name + "] = "

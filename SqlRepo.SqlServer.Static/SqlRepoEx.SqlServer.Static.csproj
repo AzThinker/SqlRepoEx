@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.0.16</Version>
+    <Version>1.1.0</Version>
     <Authors>Mike Hanson, Mark Eastwood &amp; Faustina Fechita</Authors>
     <Company></Company>
     <Product>SqlRepo</Product>
