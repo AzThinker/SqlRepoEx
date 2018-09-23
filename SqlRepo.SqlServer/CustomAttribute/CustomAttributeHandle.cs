@@ -6,16 +6,28 @@ using System.Text;
 
 namespace SqlRepoEx.SqlServer.CustomAttribute
 {
+    /// <summary>
+    /// 自定义特性操作
+    /// </summary>
     public static class CustomAttributeHandle
     {
-
+        /// <summary>
+        /// 是否为标识字段
+        /// </summary>
+        /// <param name="propertyInfo"></param>
+        /// <returns></returns>
         public static bool IsIdField(this PropertyInfo propertyInfo)
         {
 
             return propertyInfo.GetCustomAttribute(typeof(IdentityFiledAttribute)) != null;
 
         }
-
+        /// <summary>
+        /// 检查当前字段是不为标识字段
+        /// </summary>
+        /// <param name="propertyInfo"></param>
+        /// <param name="idname"></param>
+        /// <returns></returns>
         public static bool IsIdField(this PropertyInfo propertyInfo, string idname)
         {
 
@@ -23,6 +35,13 @@ namespace SqlRepoEx.SqlServer.CustomAttribute
 
 
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="TEntity"></typeparam>
+        /// <param name="oldId"></param>
+        /// <returns></returns>
 
         public static string IdentityFiledStr<TEntity>(string oldId)
         {
@@ -37,6 +56,12 @@ namespace SqlRepoEx.SqlServer.CustomAttribute
 
         }
 
+        /// <summary>
+        /// 是否非数据库属性
+        /// </summary>
+        /// <param name="propertyInfo"></param>
+        /// <returns></returns>
+
         public static bool IsNonDBField(this PropertyInfo propertyInfo)
         {
 
@@ -44,7 +69,11 @@ namespace SqlRepoEx.SqlServer.CustomAttribute
 
         }
 
-
+        /// <summary>
+        /// 是否为关键字段
+        /// </summary>
+        /// <param name="propertyInfo"></param>
+        /// <returns></returns>
         public static bool IsKeyField(this PropertyInfo propertyInfo)
         {
 
@@ -52,7 +81,11 @@ namespace SqlRepoEx.SqlServer.CustomAttribute
 
         }
 
-
+        /// <summary>
+        /// 数据表名称
+        /// </summary>
+        /// <typeparam name="TEntity"></typeparam>
+        /// <returns></returns>
 
         public static string DbTableName<TEntity>()
         {

@@ -10,6 +10,7 @@ using System.Reflection;
 namespace Atk.AtkExpression
 {
     /// <summary>
+    /// 导入此库，主要解决使用表达式时有未解析的值，如果不解析，会引发错误
     ///重写一个表达式树,并将其中引用变量转换成常量
     ///去除所附加的类信息
     /// </summary>

@@ -30,14 +30,19 @@ namespace GettingStartedIoC
             Console.WriteLine();
             results = results.Where(e => e.IsCompleted == TestExpEval()).And(e=>e.Id>0);
 
+
+            var repositoryint = this.repositoryFactory.Create<Object>();
+
+            Console.WriteLine(repositoryint.Query().UsingTableName("test").Sql());
+
             // results = results.Where(e => e.Id == 3);
 
 
-            Console.WriteLine(results.Sql());
+          //  Console.WriteLine(results.Sql());
             var its = results.Go();
 
 
-            Console.WriteLine($"{its.AsQueryable().First().Task},{its.AsQueryable().First().IsCompleted},{its.AsQueryable().First().CreatedDate} ");
+          //  Console.WriteLine($"{its.AsQueryable().First().Task},{its.AsQueryable().First().IsCompleted},{its.AsQueryable().First().CreatedDate} ");
 
         }
 

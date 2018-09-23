@@ -8,6 +8,9 @@ using System.Reflection;
 
 namespace SqlRepoEx.SqlServer
 {
+    /// <summary>
+    /// вс╬Д
+    /// </summary>
     public abstract class ClauseBuilder : IClauseBuilder
     {
         public const string DefaultSchema = "dbo";
