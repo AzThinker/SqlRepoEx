@@ -21,10 +21,10 @@ namespace SqlRepoEx.SqlServer
         public int ExecuteNonQuery(string sql)
         {
             this.LogQuery(sql);
-            using(var connection = this.connectionProvider.Provide<ISqlConnection>())
+            using (var connection = this.connectionProvider.Provide<ISqlConnection>())
             {
                 connection.Open();
-                using(var command = connection.CreateCommand())
+                using (var command = connection.CreateCommand())
                 {
                     command.CommandTimeout = CommandTimeout;
                     command.CommandType = CommandType.Text;
@@ -37,10 +37,10 @@ namespace SqlRepoEx.SqlServer
         public async Task<int> ExecuteNonQueryAsync(string sql)
         {
             this.LogQuery(sql);
-            using(var connection = this.connectionProvider.Provide<ISqlConnection>())
+            using (var connection = this.connectionProvider.Provide<ISqlConnection>())
             {
                 await connection.OpenAsync();
-                using(var command = connection.CreateCommand())
+                using (var command = connection.CreateCommand())
                 {
                     command.CommandTimeout = CommandTimeout;
                     command.CommandType = CommandType.Text;
@@ -56,14 +56,15 @@ namespace SqlRepoEx.SqlServer
             this.LogExecuteProc(name);
             var connection = this.connectionProvider.Provide<ISqlConnection>();
             connection.Open();
-            using(var command = connection.CreateCommand())
+            using (var command = connection.CreateCommand())
             {
                 command.CommandTimeout = CommandTimeout;
                 command.CommandType = CommandType.StoredProcedure;
                 command.CommandText = name;
-                foreach(var parameterDefinition in parameterDefinitions)
+                foreach (var parameterDefinition in parameterDefinitions)
                 {
-                    command.Parameters.AddWithValue(parameterDefinition.Name, parameterDefinition.Value);
+                    command.Parameters.AddWithValue(parameterDefinition.Name, parameterDefinition.Value, parameterDefinition.isNullable,
+                       parameterDefinition.DbType, parameterDefinition.Size, parameterDefinition.Direction); ;
                 }
 
                 return command.ExecuteNonQuery();
@@ -76,14 +77,15 @@ namespace SqlRepoEx.SqlServer
             this.LogExecuteProc(name);
             var connection = this.connectionProvider.Provide<ISqlConnection>();
             await connection.OpenAsync();
-            using(var command = connection.CreateCommand())
+            using (var command = connection.CreateCommand())
             {
                 command.CommandTimeout = CommandTimeout;
                 command.CommandType = CommandType.StoredProcedure;
                 command.CommandText = name;
-                foreach(var parameterDefinition in parameterDefinitions)
+                foreach (var parameterDefinition in parameterDefinitions)
                 {
-                    command.Parameters.AddWithValue(parameterDefinition.Name, parameterDefinition.Value);
+                    command.Parameters.AddWithValue(parameterDefinition.Name, parameterDefinition.Value, parameterDefinition.isNullable,
+                        parameterDefinition.DbType, parameterDefinition.Size, parameterDefinition.Direction); ;
                 }
 
                 return await command.ExecuteNonQueryAsync();
@@ -95,7 +97,7 @@ namespace SqlRepoEx.SqlServer
             this.LogQuery(sql);
             var connection = this.connectionProvider.Provide<ISqlConnection>();
             connection.Open();
-            using(var command = connection.CreateCommand())
+            using (var command = connection.CreateCommand())
             {
                 command.CommandTimeout = CommandTimeout;
                 command.CommandType = CommandType.Text;
@@ -109,7 +111,7 @@ namespace SqlRepoEx.SqlServer
             this.LogQuery(sql);
             var connection = this.connectionProvider.Provide<ISqlConnection>();
             await connection.OpenAsync();
-            using(var command = connection.CreateCommand())
+            using (var command = connection.CreateCommand())
             {
                 command.CommandTimeout = CommandTimeout;
                 command.CommandType = CommandType.Text;
@@ -124,34 +126,37 @@ namespace SqlRepoEx.SqlServer
             this.LogExecuteProc(name);
             var connection = this.connectionProvider.Provide<ISqlConnection>();
             connection.Open();
-            using(var command = connection.CreateCommand())
+            using (var command = connection.CreateCommand())
             {
                 command.CommandTimeout = CommandTimeout;
                 command.CommandType = CommandType.StoredProcedure;
                 command.CommandText = name;
-                foreach(var parametersDefinition in parametersDefinitions)
+                foreach (var parameterDefinition in parametersDefinitions)
                 {
-                    command.Parameters.AddWithValue(parametersDefinition.Name, parametersDefinition.Value);
-                }
 
+                    command.Parameters.AddWithValue(parameterDefinition.Name, parameterDefinition.Value, parameterDefinition.isNullable
+                        , parameterDefinition.DbType, parameterDefinition.Size, parameterDefinition.Direction);
+                }
                 return command.ExecuteReader(CommandBehavior.CloseConnection);
+
             }
         }
 
         public async Task<IDataReader> ExecuteStoredProcedureAsync(string name,
-            params ParameterDefinition[] parametersDefinitions)
+              params ParameterDefinition[] parametersDefinitions)
         {
             this.LogExecuteProc(name);
             var connection = this.connectionProvider.Provide<ISqlConnection>();
             await connection.OpenAsync();
-            using(var command = connection.CreateCommand())
+            using (var command = connection.CreateCommand())
             {
                 command.CommandTimeout = CommandTimeout;
                 command.CommandType = CommandType.StoredProcedure;
                 command.CommandText = name;
-                foreach(var parametersDefinition in parametersDefinitions)
+                foreach (var parameterDefinition in parametersDefinitions)
                 {
-                    command.Parameters.AddWithValue(parametersDefinition.Name, parametersDefinition.Value);
+                    command.Parameters.AddWithValue(parameterDefinition.Name, parameterDefinition.Value, parameterDefinition.isNullable,
+                       parameterDefinition.DbType, parameterDefinition.Size, parameterDefinition.Direction);
                 }
 
                 return await command.ExecuteReaderAsync(CommandBehavior.CloseConnection);

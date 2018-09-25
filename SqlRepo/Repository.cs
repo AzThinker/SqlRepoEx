@@ -5,7 +5,7 @@ using SqlRepoEx.Abstractions;
 namespace SqlRepoEx
 {
     public class Repository<TEntity> : IRepository<TEntity>
-        where TEntity: class, new()
+        where TEntity : class, new()
     {
         private readonly IStatementFactory statementFactory;
 

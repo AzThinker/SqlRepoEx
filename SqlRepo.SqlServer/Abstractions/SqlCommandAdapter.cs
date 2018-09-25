@@ -53,6 +53,7 @@ namespace SqlRepoEx.SqlServer.Abstractions
 
         public IDataReader ExecuteReader(CommandBehavior commandBehavior)
         {
+    
             return this.command.ExecuteReader(commandBehavior);
         }
 
