@@ -15,14 +15,14 @@ namespace SqlRepoEx.SqlServer
         {
             var prefix = this.GetPrefix();
             var qualifiedTableName = $"[{this.Schema}].[{this.TableName}]";
-            var alias = string.IsNullOrEmpty(this.Alias)? string.Empty: $" AS [{this.Alias}]";
-            var options = this.NoLocks? $"\nWITH ( NOLOCK )": string.Empty;
+            var alias = string.IsNullOrEmpty(this.Alias) ? string.Empty : $" AS [{this.Alias}]";
+            var options = this.NoLocks ? $"\nWITH ( NOLOCK )" : string.Empty;
             return $"\n{prefix} {qualifiedTableName}{alias}{options}";
         }
 
         private string GetPrefix()
         {
-            switch(this.JoinType)
+            switch (this.JoinType)
             {
                 case JoinType.Cross:
                     return "CROSS JOIN";

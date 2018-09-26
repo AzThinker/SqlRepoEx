@@ -52,8 +52,13 @@ namespace SqlRepoEx.SqlServer
             return null;
         }
 
-        public static void GetParameterCollection(IDataReader dataReader, ParameterDefinition[] parameters)
+        public static IDataReader GetParameterCollection(this IDataReader dataReader, ParameterDefinition[] parameters)
         {
+            if (parameters.Where(p => p.Direction > ParameterDirection.Input).Count() == 0)
+            {
+                return dataReader;
+            }
+
             var cols = GetParameterCollection(dataReader);
 
             foreach (SqlParameter p in cols)
@@ -64,6 +69,7 @@ namespace SqlRepoEx.SqlServer
                     par.Value = p.Value;
                 }
             }
+            return dataReader;
         }
 
     }

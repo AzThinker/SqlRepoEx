@@ -1,4 +1,5 @@
 ﻿using System;
+using SqlRepoEx;
 using SqlRepoEx.SqlServer.ConnectionProviders;
 using SqlRepoEx.SqlServer.Static;
 
@@ -10,9 +11,11 @@ namespace GettingStartedStatic
         {
             var connectionProvider = new AppConfigFirstConnectionProvider();
             RepoFactory.UseConnectionProvider(connectionProvider);
-
+            RepoFactory.UseLogger(new NoOpSqlLogger());
             var gettingStarted = new GettingStarted();
             gettingStarted.DoIt();
+
+            Console.ReadLine();
         }
     }
 }

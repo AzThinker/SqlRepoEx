@@ -5,7 +5,7 @@ using System.Linq.Expressions;
 namespace SqlRepoEx.Abstractions
 {
     public interface ISelectStatement<TEntity> : ISqlStatement<IEnumerable<TEntity>>
-        where TEntity: class, new()
+        where TEntity : class, new()
     {
 
         ISelectStatement<TEntity> And(Expression<Func<TEntity, bool>> selector, string alias = null);
@@ -230,6 +230,8 @@ namespace SqlRepoEx.Abstractions
         ISelectStatement<TEntity> Sum<T>(Expression<Func<T, object>> selector, string alias = null);
 
         ISelectStatement<TEntity> Top(int rows);
+
+        ISelectStatement<TEntity> Page(int rows, int page);
 
         ISelectStatement<TEntity> Where<T>(Expression<Func<T, bool>> selector, string alias = null);
 

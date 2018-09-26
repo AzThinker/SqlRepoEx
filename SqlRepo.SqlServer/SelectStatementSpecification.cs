@@ -6,7 +6,7 @@ namespace SqlRepoEx.SqlServer
 {
     public class SelectStatementSpecification
     {
-        private const string StatementTemplate = "{0}{1}{2}{3}{4}{5};";
+        private const string StatementTemplate = "{0}{1}{2}{3}{4}{5}";
 
         public SelectStatementSpecification()
         {
@@ -28,6 +28,8 @@ namespace SqlRepoEx.SqlServer
         public IList<FilterGroup> Filters { get; private set; }
         public bool NoLocks { private get; set; }
         public int? Top { get; internal set; }
+
+        public int? Page { get; internal set; }
         public bool UseTopPercent { get; internal set; }
 
         public override string ToString()
@@ -38,23 +40,25 @@ namespace SqlRepoEx.SqlServer
             var orderByClause = this.BuildOrderByClause();
             var groupByClause = this.BuildGroupByClause();
             var havingClause = this.BuildHavingClause();
-            return string.Format(StatementTemplate,
+            string result = string.Format(StatementTemplate,
                 selectClause,
                 fromClause,
                 whereClause,
                 groupByClause,
                 orderByClause,
                 havingClause);
+
+            return BuildPageClause(result);
         }
 
         private string BuildFromClause()
         {
             var result = string.Empty;
-            foreach(var specification in this.Tables)
+            foreach (var specification in this.Tables)
             {
                 specification.NoLocks = this.NoLocks;
                 result += specification.ToString();
-                if(specification.JoinType == JoinType.None)
+                if (specification.JoinType == JoinType.None)
                 {
                     continue;
                 }
@@ -71,35 +75,94 @@ namespace SqlRepoEx.SqlServer
 
         private string BuildGroupByClause()
         {
-            return !this.Groupings.Any()? string.Empty: $"\nGROUP BY {string.Join("\n, ", this.Groupings)}";
+            return !this.Groupings.Any() ? string.Empty : $"\nGROUP BY {string.Join("\n, ", this.Groupings)}";
         }
 
         private string BuildHavingClause()
         {
-            return !this.Havings.Any()? string.Empty: $"\nHAVING {string.Join("\n, ", this.Havings)}";
+            return !this.Havings.Any() ? string.Empty : $"\nHAVING {string.Join("\n, ", this.Havings)}";
         }
 
         private string BuildOrderByClause()
         {
-            return !this.Orderings.Any()? string.Empty: $"\nORDER BY {string.Join("\n, ", this.Orderings)}";
+            if (Page.HasValue)
+            {
+                return string.Empty;
+            }
+            return !this.Orderings.Any() ? string.Empty : $"\nORDER BY {string.Join("\n, ", this.Orderings)}";
         }
 
-        private string BuildSelectClause()
+        private string BuildPageOrderByClause()
+        {
+            return !this.Orderings.Any() ? string.Empty : $"\nORDER BY {string.Join("\n, ", this.Orderings)}";
+        }
+
+        private string BuildPageClause(string sql)
+        {
+            if (!Page.HasValue)
+            {
+                return sql + ";";
+            }
+            string orderbystr = BuildPageOrderByClause();
+            if (string.IsNullOrWhiteSpace(orderbystr))
+            {
+                return sql + ";";
+            }
+            const string PageTemplage = "{0} FROM ({1})As __Page_Query WHERE row_number > {2};";
+            string selectpage = BuildSelectPageClause();
+            string currertpage = ((Page ?? 1 - 1) * Top).ToString();
+
+
+            return string.Format(PageTemplage, selectpage, sql, currertpage);
+        }
+
+        private string BuildSelectPageClause()
         {
             const string ClauseTemplate = "SELECT {0}{1}";
 
-            var top = Top.HasValue ? $"TOP ({Top}) " : string.Empty;
+            string top = Top.HasValue ? $"TOP ({Top}) " : "TOP (20) ";
 
             var selections = string.Join("\n, ",
                 this.Columns.Select(c => c.ToString())
                     .ToArray());
 
-            return string.Format(ClauseTemplate, top, string.IsNullOrEmpty(selections) ? "*" : selections);
+            return string.Format(ClauseTemplate, top, "*");
+        }
+
+        private string BuildSelectClause()
+        {
+            const string ClauseTemplate = "SELECT {0}{1}{2}";
+
+
+            string top = string.Empty;
+            string page = string.Empty;
+            if (Page.HasValue)
+            {
+                string orderbystr = BuildPageOrderByClause();
+                if (!string.IsNullOrWhiteSpace(orderbystr))
+                {
+                    page = $"row_number() OVER ( {orderbystr}) as row_number,";
+                }
+                else
+                {
+                    top = Top.HasValue ? $"TOP ({Top}) " : string.Empty;
+                }
+            }
+            else
+            {
+                top = Top.HasValue ? $"TOP ({Top}) " : string.Empty;
+            }
+
+            var selections = string.Join("\n, ",
+                this.Columns.Select(c => c.ToString())
+                    .ToArray());
+
+            return string.Format(ClauseTemplate, top, page, string.IsNullOrEmpty(selections) ? "*" : selections);
         }
 
         private string BuildWhereClause()
         {
-            return !this.Filters.Any()? string.Empty: $"\n{string.Join("\n", this.Filters)}";
+            return !this.Filters.Any() ? string.Empty : $"\n{string.Join("\n", this.Filters)}";
         }
     }
 }

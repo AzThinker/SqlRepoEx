@@ -1,6 +1,6 @@
-using SqlRepoEx.Abstractions;
 using System;
 using System.Linq.Expressions;
+using SqlRepoEx.Abstractions;
 
 namespace SqlRepoEx.SqlServer.Abstractions
 {
@@ -92,6 +92,8 @@ namespace SqlRepoEx.SqlServer.Abstractions
                TableAlias alias,
               string tableName = null,
               string tableSchema = null);
+
+
         #endregion
     }
 }

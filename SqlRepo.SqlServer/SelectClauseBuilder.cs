@@ -1,9 +1,9 @@
-using SqlRepoEx.SqlServer.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using SqlRepoEx.SqlServer.Abstractions;
 
 namespace SqlRepoEx.SqlServer
 {
@@ -12,6 +12,7 @@ namespace SqlRepoEx.SqlServer
         private const string ClauseTemplate = "SELECT {0}{1}";
         private readonly IList<ColumnSelection> selections = new List<ColumnSelection>();
         private int? topRows;
+        
 
         public ISelectClauseBuilder Avg<TEntity>(Expression<Func<TEntity, object>> selector,
             string alias = null,
@@ -149,6 +150,9 @@ namespace SqlRepoEx.SqlServer
             this.topRows = rows;
             return this;
         }
+
+        
+
         #region New 2018.8.20
         public ISelectClauseBuilder Avg<TEntity>(Expression<Func<TEntity, object>> selector,
            TableAlias alias,
@@ -220,6 +224,8 @@ namespace SqlRepoEx.SqlServer
 
             return SelectAll<TEntity>(Utils.Alias(alias), tableName, tableSchema);
         }
+
+         
         #endregion
         private void AddColumnSelection<TEntity>(string alias,
             string tableName,
@@ -246,5 +252,7 @@ namespace SqlRepoEx.SqlServer
                 Aggregation = aggregation
             });
         }
+
+
     }
 }

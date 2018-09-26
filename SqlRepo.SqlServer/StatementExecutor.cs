@@ -137,7 +137,7 @@ namespace SqlRepoEx.SqlServer
                     command.Parameters.AddWithValue(parameterDefinition.Name, parameterDefinition.Value, parameterDefinition.isNullable
                         , parameterDefinition.DbType, parameterDefinition.Size, parameterDefinition.Direction);
                 }
-                return command.ExecuteReader(CommandBehavior.CloseConnection);
+                return command.ExecuteReader(CommandBehavior.CloseConnection).GetParameterCollection(parametersDefinitions);
 
             }
         }

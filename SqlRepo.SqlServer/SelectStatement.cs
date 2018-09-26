@@ -1,12 +1,12 @@
-﻿using Atk.AtkExpression;
-using SqlRepoEx.Abstractions;
-using SqlRepoEx.SqlServer.Abstractions;
-using SqlRepoEx.SqlServer.CustomAttribute;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using Atk.AtkExpression;
+using SqlRepoEx.Abstractions;
+using SqlRepoEx.SqlServer.Abstractions;
+using SqlRepoEx.SqlServer.CustomAttribute;
 
 namespace SqlRepoEx.SqlServer
 {
@@ -662,6 +662,14 @@ namespace SqlRepoEx.SqlServer
             return this;
         }
 
+
+        public ISelectStatement<TEntity> Page(int rows, int page)
+        {
+            this.Specification.Top = rows;
+            this.Specification.Page = page;
+            return this;
+        }
+
         public ISelectStatement<TEntity> Where<T>(Expression<Func<T, bool>> selector, string @alias = null)
         {
             this.ThrowIfTableNotSpecified<T>(@alias);
@@ -1126,7 +1134,7 @@ namespace SqlRepoEx.SqlServer
         {
             var rootTable = this.Specification.Tables.First();
             rootTable.TableName = tableName;
-            
+
             return this;
         }
     }
