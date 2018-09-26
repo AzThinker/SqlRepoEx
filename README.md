@@ -104,11 +104,11 @@ FROM [dbo].[ToDo]
 WHERE [dbo].[ToDo].[IsCompleted] = 0;
 
 ```
-2018-9-25增加分页操作
- var repository = RepoFactory.Create<ToDo>();
-            var results = repository.Query()
-                                    .Select(e => e.Id, e => e.Task, e => e.CreatedDate)
-                                    .OrderBy(e => e.Id)
-                                    .Page(10, 3)
-                                    .Go();
-2018-9-25增加存储OUTPUT参数返回
+2018-9-25增加分页操作<br/>
+ var repository = RepoFactory.Create<ToDo>();<br/>
+            var results = repository.Query()<br/>
+                                    .Select(e => e.Id, e => e.Task, e => e.CreatedDate)<br/>
+                                    .OrderBy(e => e.Id)<br/>
+                                    .Page(10, 3)<br/>
+                                    .Go();<br/>
+2018-9-25增加存储OUTPUT参数返回<br/>
