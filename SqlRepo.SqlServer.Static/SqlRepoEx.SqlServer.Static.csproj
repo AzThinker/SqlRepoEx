@@ -4,11 +4,11 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Version>1.1.0</Version>
-    <Authors>Mike Hanson, Mark Eastwood &amp; Faustina Fechita</Authors>
+    <Authors>杨斌</Authors>
     <Company></Company>
-    <Product>SqlRepo</Product>
+    <Product>SQL RepoEx</Product>
     <Description>Provides static wrapper for repository factory for those who cannot or do not want to use dependency injection</Description>
-    <PackageProjectUrl>https://github.com/sqlrepo/sqlrepo</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/AzThinker/SqlRepoEx</PackageProjectUrl>
     <RepositoryUrl></RepositoryUrl>
     <RepositoryType></RepositoryType>
     <PackageTags>sql, repository pattern, builder, sql server</PackageTags>

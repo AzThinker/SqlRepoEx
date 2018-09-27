@@ -3,15 +3,12 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <Version>1.1.0</Version>
-    <Authors>Mike Hanson, Mark Eastwood
- &amp; Faustina Fechita</Authors>
+    <Authors>杨斌</Authors>
     <Company></Company>
-    <Product>SQL Repo</Product>
+    <Product>SQL RepoEx</Product>
     <Description>SQL Repo core components and interfaces.  Supports implementation of SQL statement builders that are made available within an implementation of the Repository pattern.
 </Description>
-    <PackageProjectUrl>
-http://github.com/sqlrepo/sqlrepo
-</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/AzThinker/SqlRepoEx</PackageProjectUrl>
     <PackageTags>
 sql, repository, builder</PackageTags>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>

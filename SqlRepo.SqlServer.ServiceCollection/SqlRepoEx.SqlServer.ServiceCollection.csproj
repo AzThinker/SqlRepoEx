@@ -5,11 +5,11 @@
     <Version>1.1.0</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Authors>Mike Hanson, Mark Eastwood &amp; Faustina Fechita</Authors>
+    <Authors>杨斌</Authors>
     <Company></Company>
-    <Product>SQL Repo</Product>
+    <Product>SQL RepoEx</Product>
     <Description>Provides an extension method for registering SqlRepo.SqlServer components in IoC container using Microsoft Dependency Injection (Microsoft.Extensions.DependencyInjection)</Description>
-    <PackageProjectUrl>http://github.com/sqlrepo/sqlrepo</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/AzThinker/SqlRepoEx</PackageProjectUrl>
     <RepositoryType>sql, repository, builder, sql server, servicecollection</RepositoryType>
   </PropertyGroup>
 

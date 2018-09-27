@@ -9,4 +9,11 @@ namespace GettingStartedStatic
         public bool IsCompleted { get; set; }
         public string Task { get; set; }
     }
+
+    public class TwoRemark : Entity<int>
+    {
+        public string Remark { get; set; }
+        public string Task { get; set; }
+    }
+
 }

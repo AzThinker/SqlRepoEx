@@ -46,15 +46,20 @@ namespace SqlRepoEx.SqlServer.Static
 
         private static void EnsureRepositoryFactoryInstance()
         {
-            if(repositoryFactory != null)
+            if (repositoryFactory != null)
             {
                 return;
             }
 
-            if(connectionProvider == null)
+            if (connectionProvider == null)
             {
                 throw new InvalidOperationException(
                     "Create cannot be used until an IConnectionProvider has been set, have you forgotten to call UseConnectionProvider(...)");
+            }
+
+            if (sqlLogger == null)
+            {
+                sqlLogger = new SqlLogger(new[] { new NoOpSqlLogger() });
             }
 
             var statementFactoryProvider = new StatementFactoryProvider(DataReaderEntityMapper,
