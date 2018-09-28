@@ -1,12 +1,12 @@
-﻿using SqlRepoEx.Abstractions;
-using SqlRepoEx.SqlServer.Abstractions;
-using SqlRepoEx.SqlServer.CustomAttribute;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading.Tasks;
+using SqlRepoEx.Abstractions;
+using SqlRepoEx.SqlServer.Abstractions;
+using SqlRepoEx.SqlServer.CustomAttribute;
 
 namespace SqlRepoEx.SqlServer
 {
@@ -57,7 +57,12 @@ namespace SqlRepoEx.SqlServer
                 throw new InvalidOperationException(
                     "For cannot be used once Set or Where have been used, please create a new command.");
             }
-
+            if (typeof(TEntity).GetProperties()
+                                             .Where(p => p.IsKeyField()).Count() == 0)
+            {
+                throw new InvalidOperationException(
+                                    "以实例更新时，实例类必需至少有一个属性标记为[KeyFiled] 特性！");
+            }
             this.IsClean = false;
             this.entity = entity;
             return this;
@@ -170,7 +175,7 @@ namespace SqlRepoEx.SqlServer
         private string GetSetClauseFromEntity()
         {
             var columnValuePairs = typeof(TEntity).GetProperties()
-                                                  .Where(p => p.Name != "Id" && p.CanWrite && !p.IsNonDBField()
+                                                  .Where(p => !p.IsIdField() && p.CanWrite && !p.IsNonDBField()
                                                               && this.writablePropertyMatcher.Test(p
                                                                   .PropertyType))
                                                   .Select(p => "[" + p.Name + "] = "
@@ -200,10 +205,18 @@ namespace SqlRepoEx.SqlServer
 
         private string GetWhereClause()
         {
+
             if (this.entity != null)
             {
-                var identity = this.GetIdByConvention(this.entity);
-                return $"\nWHERE [{identity.Name}] = {identity.Value}";
+                var columnValuePairs = typeof(TEntity).GetProperties()
+                                             .Where(p => p.IsKeyField())
+                                             .Select(p => " [" + p.Name + "] = "
+
+                                             + this.FormatValue(p.GetValue(this.entity)));
+                if (columnValuePairs.Count() > 0)
+                {
+                    return $" WHERE {this.FormatColumnValuePairs(columnValuePairs)}";
+                }
             }
 
             var result = this.whereClauseBuilder.Sql();

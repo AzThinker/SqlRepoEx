@@ -1,13 +1,12 @@
-﻿using SqlRepoEx.Abstractions;
-using SqlRepoEx.SqlServer.Abstractions;
-using SqlRepoEx.SqlServer.CustomAttribute;
-using System;
+﻿using System;
 using System.Collections.Generic;
-
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading.Tasks;
+using SqlRepoEx.Abstractions;
+using SqlRepoEx.SqlServer.Abstractions;
+using SqlRepoEx.SqlServer.CustomAttribute;
 namespace SqlRepoEx.SqlServer
 {
     public class InsertStatement<TEntity> : SqlStatement<TEntity, TEntity>, IInsertStatement<TEntity>
@@ -34,6 +33,12 @@ namespace SqlRepoEx.SqlServer
             this.writablePropertyMatcher = writablePropertyMatcher;
         }
 
+        private void CheckIdentityFiled()
+        {
+            IdentityFiled = CustomAttributeHandle.IdentityFiledStr<TEntity>(IdentityFiled);
+            IsAutoIncrement = typeof(TEntity).GetMember(IdentityFiled).Count() > 0;
+        }
+
         public IInsertStatement<TEntity> For(TEntity entity)
         {
             if (this.selectors.Any())
@@ -41,8 +46,9 @@ namespace SqlRepoEx.SqlServer
                 throw new InvalidOperationException(
                     "For cannot be used once With has been used, please use FromScratch to reset the command before using With.");
             }
-
-            IdentityFiled = CustomAttributeHandle.IdentityFiledStr<TEntity>(IdentityFiled);
+            CheckIdentityFiled();
+            //IdentityFiled = CustomAttributeHandle.IdentityFiledStr<TEntity>(IdentityFiled);
+            //IsAutoIncrement = typeof(TEntity).GetMember(IdentityFiled).Count() > 0;
 
             this.IsClean = false;
             this.entity = entity;
@@ -165,7 +171,7 @@ namespace SqlRepoEx.SqlServer
                 throw new InvalidOperationException(
                     "With cannot be used once For has been used, please use FromScratch to reset the command before using With.");
             }
-
+            CheckIdentityFiled();
             this.IsClean = false;
             var expression = this.ConvertExpression(selector);
             this.selectors.Add(expression);
@@ -197,7 +203,7 @@ namespace SqlRepoEx.SqlServer
         private string GetColumnsListFromEntity()
         {
             var names = typeof(TEntity).GetProperties()
-                                       .Where(p => !p.IsIdField(IdentityFiled) && !p.IsNonDBField()
+                                       .Where(p => !p.IsIdField() && !p.IsNonDBField()
                                                    && this.writablePropertyMatcher.Test(p.PropertyType))
                                        .Select(p => p.Name);
             return this.FormatColumnNames(names);
@@ -222,7 +228,7 @@ namespace SqlRepoEx.SqlServer
         private string GetValuesFromEntity()
         {
             var entityValues = typeof(TEntity).GetProperties()
-                                              .Where(p => !p.IsIdField(IdentityFiled) && !p.IsNonDBField()
+                                              .Where(p => !p.IsIdField() && !p.IsNonDBField()
                                                           && this.writablePropertyMatcher.Test(
                                                               p.PropertyType))
                                               .Select(p => p.GetValue(this.entity));

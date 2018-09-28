@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using SqlRepoEx.Abstractions;
 using SqlRepoEx.SqlServer.Abstractions;
+using SqlRepoEx.SqlServer.CustomAttribute;
 
 namespace SqlRepoEx.SqlServer
 {
@@ -109,13 +112,23 @@ namespace SqlRepoEx.SqlServer
                 tableSchema: this.TableSchema);
             return this;
         }
-
+        private string FormatColumnValuePairs(IEnumerable<string> columnValuePairs)
+        {
+            return string.Join(", ", columnValuePairs);
+        }
         private string GetWhereClause()
         {
-            if(this.entity != null)
+            if (this.entity != null)
             {
-                var identity = this.GetIdByConvention(this.entity);
-                return $"\nWHERE [{identity.Name}] = {identity.Value}";
+                var columnValuePairs = typeof(TEntity).GetProperties()
+                                             .Where(p => p.IsKeyField())
+                                             .Select(p => " [" + p.Name + "] = "
+
+                                             + this.FormatValue(p.GetValue(this.entity)));
+                if (columnValuePairs.Count() > 0)
+                {
+                    return $" WHERE {this.FormatColumnValuePairs(columnValuePairs)}";
+                }
             }
 
             var result = this.whereClauseBuilder.Sql();
