@@ -9,7 +9,7 @@
     <Description>Implementation of SqlRepo for Microsoft SQL Server</Description>
     <PackageProjectUrl>https://github.com/AzThinker/SqlRepoEx</PackageProjectUrl>
     <PackageTags>sql, repository, builder, sql server</PackageTags>
-    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <AssemblyVersion>1.1.0.0</AssemblyVersion>
     <FileVersion>1.0.0.0</FileVersion>
   </PropertyGroup>
