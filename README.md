@@ -1,3 +1,27 @@
+2.2.0
+
+For Dapper
+```
+       var repository = MsSqlRepoFactory.Create<ToDo>();
+            var results = repository.Query().Where(c => c.Id == 6).Go().FirstOrDefault();
+            ToDo toDo = new ToDo();
+            toDo.Task = "Atk";
+            var resultinsert = repository.Insert().For(results);//.With(c => c.Task, "nkk");
+            Console.WriteLine(resultinsert.ParamSql());
+            var v = resultinsert.ParamSqlWithEntity();
+            Console.WriteLine(v.paramsql);
+```
+```
+INSERT  ToDo ( CreatedDate , IsCompleted , Task )
+
+VALUES(@CreatedDate,@IsCompleted,@Task);
+```
+var resultinsert = repository.Update().For(results);
+```
+ UPDATE   ToDo
+SET CreatedDate  = @CreatedDate, IsCompleted  = @IsCompleted, Task  = @Task
+WHERE Id  = @Id;
+```
 # 本项目是在 SqlRepo 之上进行的二次开发
  
 ## 主要解决：<br>
