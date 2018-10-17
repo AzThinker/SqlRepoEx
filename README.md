@@ -1,3 +1,21 @@
+NuGet library that you can add in to your project</br>
+
+[SqlRepoEx.Adapter.Dapper](https://www.nuget.org/packages/SqlRepoEx.Adapter.Dapper/)</br>
+
+[SqlRepoEx.MsSql.Static](https://www.nuget.org/packages/SqlRepoEx.MsSql.Static/)</br>
+
+[SqlRepoEx.MsSql.Autofac](https://www.nuget.org/packages/SqlRepoEx.MsSql.Autofac/)</br>
+
+[SqlRepoEx.MsSql.ServiceCollection](https://www.nuget.org/packages/SqlRepoEx.MsSql.ServiceCollection/)</br>
+
+[SqlRepoEx.MySql.Static](https://www.nuget.org/packages/SqlRepoEx.MySql.Static/)</br>
+
+[SqlRepoEx.MySql.ServiceCollection](https://www.nuget.org/packages/SqlRepoEx.MySql.ServiceCollection/)</br>
+
+[SqlRepoEx.MySql.Autofac](https://www.nuget.org/packages/SqlRepoEx.MySql.Autofac/)</br>
+
+
+
 2.2.0
 
 For Dapper
