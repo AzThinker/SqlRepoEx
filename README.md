@@ -1,16 +1,16 @@
 ## Features
-1, SqlRepoEx  Intuitively build SQL statements using C# Lambda Expressions，it is a  simple object mapper for .Net.
-2. SqlRepoEx solves the problem of Lambda to Sql statements. We no longer use strings to join Sql statements.
-3. SqlRepoEx not only implements the complete statement parser such as Select, Insert, Update, Delete, etc., but also implements clauses such as Select, where, order by, etc., which all support the export of SQL statements, making it easy to splicing SQL statements in complex scenarios.
-4.SqlRepoEx also provides IExecuteSqlStatement and its implementation class, which appends the SQL statement you want with the WithSql() method and gets the desired result with Go(), just like Go() in other statement parsers;
-5. SqlRepoEx solves the dialect access of common databases such as Sql Server and MySql, which makes it very easy for us to migrate between Sql Server and MySql. You don't need to care what database you are using.
-6. SqlRepoEx is fast.The native data access of SqlRepoEx is equal to that of Dapper. In addition, SqlRepoEx can best integrate with Dapper and can easily use Dapper's powerful functions.
-7. SqlRepoEx itself supports Sql Server and MySql dialect, and supports non-dialect Sql through sqlrepoex.normal. Other data access libraries, such as Dappers, can access most databases.
-8. In fact, SqlRepoEx parses Lambda and converts it into SQL statements, and you can use any ORM tool that can use SQL to access the data you want.
-9. SqlRepoEx supports a variety of complex SQL syntax, such as Union,Join, etc. Meanwhile, more complex type results can be expressed through simple Join on statements
-10, SqlRepoEx not intrusive, only through simple several features, can let the class with the database, there are no complicated XML configuration, also do not need josn configuration, if SqlRepoEx used in the configuration file, that is configured in the database connection string in the configuration file, of course, you can directly specified in the code, which is depending on your use of the data provider.
-11. SqlRepoEx USES Lambda expressions, so it is very simple for c# programmers. The syntax is very similar to Linq to Sql, but does not depend on the data context, so there is no need to accommodate the database design.
-12. Most types of SqlRepoEx are rewritable and highly extensible (SqlRepoEx.Adapter.Dapper is a simple but powerful extension).
+1, SqlRepoEx  Intuitively build SQL statements using C# Lambda Expressions，it is a  simple object mapper for .Net.</br>
+2. SqlRepoEx solves the problem of Lambda to Sql statements. We no longer use strings to join Sql statements.</br>
+3. SqlRepoEx not only implements the complete statement parser such as Select, Insert, Update, Delete, etc., but also implements clauses such as Select, where, order by, etc., which all support the export of SQL statements, making it easy to splicing SQL statements in complex scenarios.</br>
+4.SqlRepoEx also provides IExecuteSqlStatement and its implementation class, which appends the SQL statement you want with the WithSql() method and gets the desired result with Go(), just like Go() in other statement parsers;</br>
+5. SqlRepoEx solves the dialect access of common databases such as Sql Server and MySql, which makes it very easy for us to migrate between Sql Server and MySql. You don't need to care what database you are using.</br>
+6. SqlRepoEx is fast.The native data access of SqlRepoEx is equal to that of Dapper. In addition, SqlRepoEx can best integrate with Dapper and can easily use Dapper's powerful functions.</br>
+7. SqlRepoEx itself supports Sql Server and MySql dialect, and supports non-dialect Sql through sqlrepoex.normal. Other data access libraries, such as Dappers, can access most databases.</br>
+8. In fact, SqlRepoEx parses Lambda and converts it into SQL statements, and you can use any ORM tool that can use SQL to access the data you want.</br>
+9. SqlRepoEx supports a variety of complex SQL syntax, such as Union,Join, etc. Meanwhile, more complex type results can be expressed through simple Join on statements</br>
+10, SqlRepoEx not intrusive, only through simple several features, can let the class with the database, there are no complicated XML configuration, also do not need josn configuration, if SqlRepoEx used in the configuration file, that is configured in the database connection string in the configuration file, of course, you can directly specified in the code, which is depending on your use of the data provider.</br>
+11. SqlRepoEx USES Lambda expressions, so it is very simple for c# programmers. The syntax is very similar to Linq to Sql, but does not depend on the data context, so there is no need to accommodate the database design.</br>
+12. Most types of SqlRepoEx are rewritable and highly extensible (SqlRepoEx.Adapter.Dapper is a simple but powerful extension).</br>
 
 ## Installation
 NuGet library that you can add in to your project</br>
@@ -75,7 +75,7 @@ And ([dbo].[ToDo].[Id] > 3);
 
 ```  
 
-Page(SQL Server,Note that Order by is required)
+## Page(SQL Server,Note that Order by is required)
 
 ```
 var repository = MsSqlRepoFactory.Create<ToDo>();
@@ -91,7 +91,7 @@ ORDER BY [dbo].[ToDo].[Id] ASC) as row_number,[dbo].[ToDo].[CreatedDate]
 FROM [dbo].[ToDo])As __Page_Query WHERE row_number > 20;
 
 ```
-Union
+## Union
 
 ``` C#
  var repository = MsSqlRepoFactory.Create<ToDo>();
@@ -120,7 +120,7 @@ FROM [dbo].[ToDo]
 WHERE ((([dbo].[ToDo].[Id] > 10) and ([dbo].[ToDo].[Id] < 15))) )
 AS  _this_is_union
 ```
-
+## Join
 ```
  var repository = MsSqlRepoFactory.Create<ToDo>();
  var results2 = repository.Query().Select(c=>c.Id,c=>c.Task,c=>c.Remark)
@@ -141,7 +141,8 @@ LEFT OUTER JOIN [dbo].[TaskRemark]
 ON [dbo].[ToDo].[Task] = [dbo].[TaskRemark].[Task];
 ```
 
-For   Dapper (Notice, Only Insert,Update Support   ParamSqlWithEntity() and ParamSql() method）
+## For   Dapper </br>
+(Notice, Only Insert,Update Support   ParamSqlWithEntity() and ParamSql() method）</br>
 ```
 	var repository = MySqlRepoFactory.Create<ToDo>();
             var results1 = repository.Query().Where(c => c.Id == 2).Go().FirstOrDefault();
@@ -159,7 +160,7 @@ UPDATE  `ToDo`
 SET CreatedDate  = @CreatedDate, IsCompleted  = @IsCompleted, Task  = @Task
 WHERE Id  = @Id;
 ```
-For Inline access Dapper
+## For Inline access Dapper
 
 ```
            string ConnectionString = "datasource=127.0.0.1;username=test;password=test;database=sqlrepotest;charset=gb2312;SslMode = none;";
