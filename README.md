@@ -79,7 +79,7 @@ And ([dbo].[ToDo].[Id] > 3);
 
 ```
 var repository = MsSqlRepoFactory.Create<ToDo>();
- var results2 = repository.Query().Page(10, 3).Go();
+ var results2 = repository.Query().Page(10, 3).OrderBy(e => e.Id).Go();
 ```
 Generates the following SQL statement and maps the results back to the list of ToDo objects.
 ``` sql
