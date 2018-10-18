@@ -1,122 +1,48 @@
+## Features
+1, SqlRepoEx  Intuitively build SQL statements using C# Lambda Expressions，it is a  simple object mapper for .Net.
+2. SqlRepoEx solves the problem of Lambda to Sql statements. We no longer use strings to join Sql statements.
+3. SqlRepoEx not only implements the complete statement parser such as Select, Insert, Update, Delete, etc., but also implements clauses such as Select, where, order by, etc., which all support the export of SQL statements, making it easy to splicing SQL statements in complex scenarios.
+4.SqlRepoEx also provides IExecuteSqlStatement and its implementation class, which appends the SQL statement you want with the WithSql() method and gets the desired result with Go(), just like Go() in other statement parsers;
+5. SqlRepoEx solves the dialect access of common databases such as Sql Server and MySql, which makes it very easy for us to migrate between Sql Server and MySql. You don't need to care what database you are using.
+6. SqlRepoEx is fast.The native data access of SqlRepoEx is equal to that of Dapper. In addition, SqlRepoEx can best integrate with Dapper and can easily use Dapper's powerful functions.
+7. SqlRepoEx itself supports Sql Server and MySql dialect, and supports non-dialect Sql through sqlrepoex.normal. Other data access libraries, such as Dappers, can access most databases.
+8. In fact, SqlRepoEx parses Lambda and converts it into SQL statements, and you can use any ORM tool that can use SQL to access the data you want.
+9. SqlRepoEx supports a variety of complex SQL syntax, such as Union,Join, etc. Meanwhile, more complex type results can be expressed through simple Join on statements
+10, SqlRepoEx not intrusive, only through simple several features, can let the class with the database, there are no complicated XML configuration, also do not need josn configuration, if SqlRepoEx used in the configuration file, that is configured in the database connection string in the configuration file, of course, you can directly specified in the code, which is depending on your use of the data provider.
+11. SqlRepoEx USES Lambda expressions, so it is very simple for c# programmers. The syntax is very similar to Linq to Sql, but does not depend on the data context, so there is no need to accommodate the database design.
+12. Most types of SqlRepoEx are rewritable and highly extensible (SqlRepoEx.Adapter.Dapper is a simple but powerful extension).
+
+## Installation
 NuGet library that you can add in to your project</br>
+
+## For Inline access Dapper
 
 [SqlRepoEx.Adapter.Dapper](https://www.nuget.org/packages/SqlRepoEx.Adapter.Dapper/)</br>
 
+For SQL Server ,Use static mode(WinForm,Asp.Net Core etc.)
+
 [SqlRepoEx.MsSql.Static](https://www.nuget.org/packages/SqlRepoEx.MsSql.Static/)</br>
+
+For SQL Server ,Use Autofac mode(WinForm,Asp.Net Core etc.)
 
 [SqlRepoEx.MsSql.Autofac](https://www.nuget.org/packages/SqlRepoEx.MsSql.Autofac/)</br>
 
+For SQL Server ,Use ServiceCollection mode ( Asp.Net Core etc.)
+
 [SqlRepoEx.MsSql.ServiceCollection](https://www.nuget.org/packages/SqlRepoEx.MsSql.ServiceCollection/)</br>
 
+For MySql ,Use static mode(WinForm,Asp.Net Core etc.)
 [SqlRepoEx.MySql.Static](https://www.nuget.org/packages/SqlRepoEx.MySql.Static/)</br>
+
+For MySql ,Use ServiceCollection mode(Asp.Net Core etc.) 
 
 [SqlRepoEx.MySql.ServiceCollection](https://www.nuget.org/packages/SqlRepoEx.MySql.ServiceCollection/)</br>
 
+For SQL Server ,Use Autofac mode(WinForm,Asp.Net Core etc.)
 [SqlRepoEx.MySql.Autofac](https://www.nuget.org/packages/SqlRepoEx.MySql.Autofac/)</br>
-
-
-
-2.2.0
-
-For Dapper
-```
-       var repository = MsSqlRepoFactory.Create<ToDo>();
-            var results = repository.Query().Where(c => c.Id == 6).Go().FirstOrDefault();
-            ToDo toDo = new ToDo();
-            toDo.Task = "Atk";
-            var resultinsert = repository.Insert().For(results);//.With(c => c.Task, "nkk");
-            Console.WriteLine(resultinsert.ParamSql());
-            var v = resultinsert.ParamSqlWithEntity();
-            Console.WriteLine(v.paramsql);
-```
-```
-INSERT  ToDo ( CreatedDate , IsCompleted , Task )
-
-VALUES(@CreatedDate,@IsCompleted,@Task);
-```
-var resultinsert = repository.Update().For(results);
-```
- UPDATE   ToDo
-SET CreatedDate  = @CreatedDate, IsCompleted  = @IsCompleted, Task  = @Task
-WHERE Id  = @Id;
-```
-# 本项目是在 SqlRepo 之上进行的二次开发
- 
-## 主要解决：<br>
- 
-1、解决拼接语句，使用where以外方法时，缺少Where子句时的错误；<br>
-2、解决多条件拼接Where；<br>
-3、增加操作时，不再受限于实例必需有Id的自增自段<br>
-
 
 ## Example
 ``` c#
-IRepository<ToDo> repository = repositoryFactory.Create<ToDo>();
-            var results = repository.Query()
-                         .Select(e => e.Id, e => e.Task, e => e.CreatedDate);
- results = results.Where(e => e.IsCompleted == false);
- results = results.Where(e => e.Id == 3);
-```
-未改之前
-``` sql
-
-SELECT [dbo].[ToDo].[Id]
-, [dbo].[ToDo].[Task]
-, [dbo].[ToDo].[CreatedDate]
-FROM [dbo].[ToDo]
-WHERE ([dbo].[ToDo].[IsCompleted] = 0)
-WHERE ([dbo].[ToDo].[Id] = 3);
-
-```
-更改后
-``` sql
-
-SELECT [dbo].[ToDo].[Id]
-, [dbo].[ToDo].[Task]
-, [dbo].[ToDo].[CreatedDate]
-FROM [dbo].[ToDo]
-WHERE ([dbo].[ToDo].[IsCompleted] = 0)
-And ([dbo].[ToDo].[Id] = 3);
-
-```
-指定非自增字段
-``` C#
-var repository = this.repositoryFactory.Create<DoitTest>();
-DoitTest doitTest = new DoitTest();
-
-doitTest.TestRmk = "测试";
-doitTest.TestBool = true;
-doitTest.TestId = 123;
-Console.WriteLine(repository.Insert().UsingIdField(d => d.TestId, false).For(doitTest).Sql());
-```
-生成的SQL
-``` SQL
-INSERT [dbo].[DoitTest]([TestId], [TestRmk], [TestBool])
-VALUES(123, '测试', 1);
-
-```
-指定非自增字段
-``` C#
-var repository = this.repositoryFactory.Create<DoitTest>();
-DoitTest doitTest = new DoitTest();
-
-doitTest.TestRmk = "测试";
-doitTest.TestBool = true;
-doitTest.TestId = 123;
-Console.WriteLine(repository.Insert().UsingIdField(d => d.TestId).For(doitTest).Sql());
-```
-生成的SQL
-``` SQL
-INSERT [dbo].[DoitTest]([TestRmk], [TestBool])
-VALUES('测试', 1);
-SELECT *
-FROM [dbo].[DoitTest]
-WHERE [TestId] = SCOPE_IDENTITY();
-```
- 
-原项目中的例子：
-```csharp
-
 public class GettingStarted
 {
     private IRepositoryFactory repositoryFactory;
@@ -128,31 +54,118 @@ public class GettingStarted
 
     public void DoIt()
     {
-         var repository = this.repositoryFactory.Create<ToDo>();
-         var results = repository.Query()
-         .Select(e => e.Id, e => e.Task, e => e.CreatedDate)
-         .Where(e => e.IsCompleted == false)
-         .Go();
+         IRepository<ToDo> repository = repositoryFactory.Create<ToDo>();
+            var results = repository.Query()
+                         .Select(e => e.Id, e => e.Task, e => e.CreatedDate);
+	 results = results.Where(e => e.IsCompleted == false);
+	 results = results.Where(e => e.Id >3);
+	 var values=result.Go();
     }
 }
-
 ```
 Generates the following SQL statement and maps the results back to the list of ToDo objects.
+``` sql
 
-```sql
-
-SELECT [dbo].[ToDo].[Id], [dbo].[ToDo].[Task], [dbo].[ToDo].[CreatedDate]
+SELECT [dbo].[ToDo].[Id]
+, [dbo].[ToDo].[Task]
+, [dbo].[ToDo].[CreatedDate]
 FROM [dbo].[ToDo]
-WHERE [dbo].[ToDo].[IsCompleted] = 0;
+WHERE ([dbo].[ToDo].[IsCompleted] = 0)
+And ([dbo].[ToDo].[Id] > 3);
+
+```  
+
+Page(SQL Server,Note that Order by is required)
 
 ```
-2018-9-25增加分页操作<br/>
-```csharp
- var repository = RepoFactory.Create<ToDo>();
-            var results = repository.Query()
-                                    .Select(e => e.Id, e => e.Task, e => e.CreatedDate)
-                                    .OrderBy(e => e.Id)
-                                    .Page(10, 3)
-                                    .Go();
+var repository = MsSqlRepoFactory.Create<ToDo>();
+ var results2 = repository.Query().Page(10, 3).Go();
 ```
-2018-9-25增加存储OUTPUT参数返回<br/>
+Generates the following SQL statement and maps the results back to the list of ToDo objects.
+``` sql
+SELECT TOP (10) * FROM (SELECT row_number() OVER (
+ORDER BY [dbo].[ToDo].[Id] ASC) as row_number,[dbo].[ToDo].[CreatedDate]
+, [dbo].[ToDo].[IsCompleted]
+, [dbo].[ToDo].[Task]
+, [dbo].[ToDo].[Id]
+FROM [dbo].[ToDo])As __Page_Query WHERE row_number > 20;
+
+```
+Union
+
+``` C#
+ var repository = MsSqlRepoFactory.Create<ToDo>();
+            var results = repository.Query().Select(e => e.Id, e => e.Task);
+            var results5 = repository.Query().Select(e => e.Id, e => e.Task)
+                          .Where(c => c.Id > 0 && c.Id < 7);
+            var results6 = repository.Query()
+                           .Select(e => e.Id, e => e.Task)
+                          .Where(c => c.Id > 10 && c.Id < 15);
+            var results2 = results.Union(new List<UnionSql> {
+                     UnionSql.New(  results5,UnionType.Union ),
+                     UnionSql.New(  results6,UnionType.Union )  })
+```
+Generates the following SQL statement and maps the results back to the list of ToDo objects.
+``` sql
+SELECT [_this_is_union].[Id]
+, [_this_is_union].[Task]
+FROM ( SELECT [dbo].[ToDo].[Id]
+, [dbo].[ToDo].[Task]
+FROM [dbo].[ToDo]
+WHERE ((([dbo].[ToDo].[Id] > 0) and ([dbo].[ToDo].[Id] < 7)))
+UNION
+ SELECT [dbo].[ToDo].[Id]
+, [dbo].[ToDo].[Task]
+FROM [dbo].[ToDo]
+WHERE ((([dbo].[ToDo].[Id] > 10) and ([dbo].[ToDo].[Id] < 15))) )
+AS  _this_is_union
+```
+
+```
+ var repository = MsSqlRepoFactory.Create<ToDo>();
+ var results2 = repository.Query().Select(c=>c.Id,c=>c.Task,c=>c.Remark)
+                           .LeftOuterJoin<TaskRemark>()
+			   // add additional conditions. If the main selection has this property, query what is set in this sentence
+                           .On<TaskRemark>((r, l) => r.Task == l.Task, l => l.Remark).Go();
+ 
+```
+Generates the following SQL statement and maps the results back to the list of ToDo objects.</br>
+
+``` sql
+
+SELECT [dbo].[ToDo].[Id]
+, [dbo].[ToDo].[Task]
+, [dbo].[TaskRemark].[Remark]
+FROM [dbo].[ToDo]
+LEFT OUTER JOIN [dbo].[TaskRemark]
+ON [dbo].[ToDo].[Task] = [dbo].[TaskRemark].[Task];
+```
+
+For   Dapper (Notice, Only Insert,Update Support   ParamSqlWithEntity() and ParamSql() method）
+```
+	var repository = MySqlRepoFactory.Create<ToDo>();
+            var results1 = repository.Query().Where(c => c.Id == 2).Go().FirstOrDefault();
+            results1.Task = "B21";
+            var rest2=   repository.Update().For(results1);
+            var rest3 = rest2.ParamSqlWithEntity();
+	    // Get  IDbConnection
+            IDbConnection dbConnection = repository.GetConnectionProvider.GetDbConnection;
+	    // Use Dapper
+            dbConnection.Execute(rest3.paramsql, rest3.entity);
+```
+Generates the following SQL statement and maps the results back to the list of ToDo objects.
+``` sql
+UPDATE  `ToDo`
+SET CreatedDate  = @CreatedDate, IsCompleted  = @IsCompleted, Task  = @Task
+WHERE Id  = @Id;
+```
+For Inline access Dapper
+
+```
+           string ConnectionString = "datasource=127.0.0.1;username=test;password=test;database=sqlrepotest;charset=gb2312;SslMode = none;";
+            var connectionProvider = new  ConnectionStringConnectionProvider(ConnectionString);
+            MySqlRepoFactory.UseConnectionProvider(connectionProvider);
+            MySqlRepoFactory.UseStatementExecutor(new DapperStatementExecutor(connectionProvider));
+            MySqlRepoFactory.UseDataReaderEntityMapper(new DapperEntityMapper());
+            MySqlRepoFactory.UseWritablePropertyMatcher(new SimpleWritablePropertyMatcher());
+```
